@@ -45,6 +45,9 @@ EXTERNALPROJECT_ADD(
 include_directories(${source_dir}/inc)
 # link_directories(${build_dir}/build)
 
+set(source_dir "${CMAKE_BINARY_DIR}/libnlohmann-src")
+set(build_dir "${CMAKE_BINARY_DIR}/libnlohmann-build") 
+
 EXTERNALPROJECT_ADD(
   libnlohmann
   GIT_REPOSITORY    https://github.com/nlohmann/json.git
