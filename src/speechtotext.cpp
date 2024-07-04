@@ -72,7 +72,7 @@ inline void TextFromVoice::init()
         std::string{stt::audioDirectory} + std::string{stt::recordingName};
     recordVoiceCmd = "sox --no-show-progress --type alsa default --rate 16000 "
                      "--channels 1 " +
-                     audioFilePath + " silence -l 1 1 2% 1 1.0 1% pad 0.2 0.5";
+                     audioFilePath + " silence -l 1 1 2% 1 1.5 1% pad 0.2 0.5";
     getTextFromVoiceCmd =
         "wget --quiet --user-agent \"Mozilla/5.0\" --post-file " +
         audioFilePath +
