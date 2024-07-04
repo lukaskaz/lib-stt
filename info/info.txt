@@ -1,0 +1,60 @@
+$ aplay -l
+$ arecord -l
+
+$ aplay -l
+**** List of PLAYBACK Hardware Devices ****
+card 0: Headphones [bcm2835 Headphones], device 0: bcm2835 Headphones [bcm2835 Headphones]
+  Subdevices: 8/8
+  Subdevice #0: subdevice #0
+  Subdevice #1: subdevice #1
+  Subdevice #2: subdevice #2
+  Subdevice #3: subdevice #3
+  Subdevice #4: subdevice #4
+  Subdevice #5: subdevice #5
+  Subdevice #6: subdevice #6
+  Subdevice #7: subdevice #7
+card 2: vc4hdmi0 [vc4-hdmi-0], device 0: MAI PCM i2s-hifi-0 [MAI PCM i2s-hifi-0]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+card 3: vc4hdmi1 [vc4-hdmi-1], device 0: MAI PCM i2s-hifi-0 [MAI PCM i2s-hifi-0]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+$ arecord -l
+**** List of CAPTURE Hardware Devices ****
+card 1: Mic [Marantz Umpire Mic], device 0: USB Audio [USB Audio]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+
+
+$ sudo vim ~/.asoundrc
+
+$ cat ~/.asoundrc
+pcm.!default {
+  type asym
+  playback.pcm {
+    type plug
+    slave.pcm "hw:0,0"
+  }
+  capture.pcm {
+    type plug
+    slave.pcm "hw:1,0"
+  }
+}
+
+pcm.output {
+  type hw
+  card 0
+}
+
+ctl.!default {
+  type hw
+  card 0
+}
+
+$ readlink -f ~/.asoundrc
+/home/lukasz/.asoundrc
+$ readlink -f /etc/modprobe.d/alsa-base.conf
+/etc/modprobe.d/alsa-base.conf
+
+
+{"result":[]} {"result":[{"alternative":[{"transcript":"imię","confidence":0.91898549}],"final":true}],"result_index":0}
