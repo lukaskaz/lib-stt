@@ -1,0 +1,6 @@
+build/
+conf/
+!tests/conf/
+tests/build/
+.vscode/
+
