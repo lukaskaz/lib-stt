@@ -44,11 +44,7 @@ class TextFromVoiceFactory
     TextFromVoiceFactory& operator=(const TextFromVoiceFactory&) = delete;
     TextFromVoiceFactory& operator=(TextFromVoiceFactory&&) = delete;
 
-    static std::shared_ptr<TextFromVoice> create(language lang)
-    {
-        auto shell = std::make_shared<BashCommand>();
-        return std::make_shared<TextFromVoice>(shell, lang);
-    }
+    static std::shared_ptr<TextFromVoice> create(language);
 };
 
 } // namespace stt
