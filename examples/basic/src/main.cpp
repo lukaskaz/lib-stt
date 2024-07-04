@@ -23,12 +23,4 @@ int main()
     }
 
     return 0;
-    {"result" : []} {
-        "result" : [ {
-            "alternative" :
-                [ {"transcript" : "imię", "confidence" : 0.91898549} ],
-            "final" : true
-        } ],
-        "result_index" : 0
-    };
 }
