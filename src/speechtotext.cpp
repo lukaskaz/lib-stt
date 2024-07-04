@@ -107,4 +107,10 @@ inline void TextFromVoice::run()
     }
 }
 
+std::shared_ptr<TextFromVoice> TextFromVoiceFactory::create(language lang)
+{
+    auto shell = std::make_shared<BashCommand>();
+    return std::make_shared<TextFromVoice>(shell, lang);
+}
+
 } // namespace stt

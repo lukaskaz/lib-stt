@@ -28,7 +28,7 @@ add_executable(${PROJECT_NAME} ${APP_SOURCES} ${TEST_SOURCES})
 add_dependencies(${PROJECT_NAME} googletest)
 add_dependencies(${PROJECT_NAME} libshellcmd)
 add_dependencies(${PROJECT_NAME} libnlohmann)
-target_link_libraries(${PROJECT_NAME} gtest gmock Boost::filesystem)
+target_link_libraries(${PROJECT_NAME} shellcmd gtest gmock Boost::filesystem)
 
 add_test(
     NAME ${PROJECT_NAME}

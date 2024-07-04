@@ -9,9 +9,7 @@ int main()
 {
     try
     {
-        auto shellCommand = std::make_shared<BashCommand>();
-        auto stt = std::make_unique<stt::TextFromVoice>(shellCommand,
-                                                        stt::language::polish);
+        auto stt = stt::TextFromVoiceFactory::create(stt::language::polish);
         std::cout << "Speak now...\n";
         auto [text, quality] = stt->listen();
         std::cout << "Text: " << std::quoted(text) << ", quality: " << quality

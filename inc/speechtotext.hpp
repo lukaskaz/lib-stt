@@ -35,4 +35,16 @@ class TextFromVoice
     void run();
 };
 
+class TextFromVoiceFactory
+{
+  public:
+    TextFromVoiceFactory() = delete;
+    TextFromVoiceFactory(const TextFromVoiceFactory&) = delete;
+    TextFromVoiceFactory(TextFromVoiceFactory&&) = delete;
+    TextFromVoiceFactory& operator=(const TextFromVoiceFactory&) = delete;
+    TextFromVoiceFactory& operator=(TextFromVoiceFactory&&) = delete;
+
+    static std::shared_ptr<TextFromVoice> create(language);
+};
+
 } // namespace stt
