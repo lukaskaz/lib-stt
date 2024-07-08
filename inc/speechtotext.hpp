@@ -14,13 +14,20 @@ enum class language
     polish
 };
 
-class TextFromVoice
+class TextFromVoiceIf
+{
+  public:
+    virtual ~TextFromVoiceIf(){};
+    virtual std::pair<std::string, uint32_t> listen() = 0;
+};
+
+class TextFromVoice : public TextFromVoiceIf
 {
   public:
     TextFromVoice(std::shared_ptr<ShellCommand>, language);
     ~TextFromVoice();
 
-    std::pair<std::string, uint32_t> listen();
+    std::pair<std::string, uint32_t> listen() override;
 
   private:
     std::shared_ptr<ShellCommand> commandHandler;
@@ -44,7 +51,9 @@ class TextFromVoiceFactory
     TextFromVoiceFactory& operator=(const TextFromVoiceFactory&) = delete;
     TextFromVoiceFactory& operator=(TextFromVoiceFactory&&) = delete;
 
-    static std::shared_ptr<TextFromVoice> create(language);
+    static std::shared_ptr<TextFromVoiceIf> create(language);
+    static std::shared_ptr<TextFromVoiceIf>
+        create(std::shared_ptr<ShellCommand>, language);
 };
 
 } // namespace stt

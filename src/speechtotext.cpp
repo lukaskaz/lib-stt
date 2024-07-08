@@ -107,9 +107,16 @@ inline void TextFromVoice::run()
     }
 }
 
-std::shared_ptr<TextFromVoice> TextFromVoiceFactory::create(language lang)
+std::shared_ptr<TextFromVoiceIf> TextFromVoiceFactory::create(language lang)
 {
     auto shell = std::make_shared<BashCommand>();
+    return create(shell, lang);
+}
+
+std::shared_ptr<TextFromVoiceIf>
+    TextFromVoiceFactory::create(std::shared_ptr<ShellCommand> shell,
+                                 language lang)
+{
     return std::make_shared<TextFromVoice>(shell, lang);
 }
 
