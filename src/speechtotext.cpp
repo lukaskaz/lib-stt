@@ -22,6 +22,11 @@ static constexpr const char* resultSignature = "transcript";
 static const std::unordered_map<language, std::string> langMap = {
     {language::english, "en"}, {language::polish, "pl"}};
 
+void TextFromVoiceIf::kill()
+{
+    shell::BashCommand().run("killall -s KILL sox");
+}
+
 TextFromVoice::TextFromVoice(
     std::shared_ptr<shell::ShellCommand> commandHandler, language langOfVoice) :
     commandHandler{commandHandler},

@@ -19,6 +19,7 @@ class TextFromVoiceIf
   public:
     virtual ~TextFromVoiceIf(){};
     virtual std::pair<std::string, uint32_t> listen() = 0;
+    static void kill();
 };
 
 class TextFromVoice : public TextFromVoiceIf
