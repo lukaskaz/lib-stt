@@ -24,13 +24,13 @@ class TextFromVoiceIf
 class TextFromVoice : public TextFromVoiceIf
 {
   public:
-    TextFromVoice(std::shared_ptr<ShellCommand>, language);
+    TextFromVoice(std::shared_ptr<shell::ShellCommand>, language);
     ~TextFromVoice();
 
     std::pair<std::string, uint32_t> listen() override;
 
   private:
-    std::shared_ptr<ShellCommand> commandHandler;
+    std::shared_ptr<shell::ShellCommand> commandHandler;
     const std::string languageId;
     std::string audioFilePath;
     std::string recordVoiceCmd;
@@ -53,7 +53,7 @@ class TextFromVoiceFactory
 
     static std::shared_ptr<TextFromVoiceIf> create(language);
     static std::shared_ptr<TextFromVoiceIf>
-        create(std::shared_ptr<ShellCommand>, language);
+        create(std::shared_ptr<shell::ShellCommand>, language);
 };
 
 } // namespace stt

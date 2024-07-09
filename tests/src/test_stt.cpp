@@ -1,4 +1,4 @@
-#include "mocks/mock_command.hpp"
+#include "mocks/mock_shell.hpp"
 #include "speechtotext.hpp"
 
 using namespace testing;
@@ -6,8 +6,8 @@ using namespace testing;
 class TestStt : public Test
 {
   public:
-    std::shared_ptr<NiceMock<CommandsMock>> commandMock =
-        std::make_shared<NiceMock<CommandsMock>>();
+    std::shared_ptr<NiceMock<ShellMock>> shellMock =
+        std::make_shared<NiceMock<ShellMock>>();
 
   protected:
     void SetUp() override
@@ -28,13 +28,13 @@ TEST_F(TestStt, testSttValidTextShellCmdCalledTwice)
         "\"confidence\":" +
         std::to_string(initialconfid) +
         "}],\"final\":true}],\"result_index\":0}"};
-    ON_CALL(*commandMock, run(_)).WillByDefault(Return(0));
-    ON_CALL(*commandMock, run(_, _))
+    ON_CALL(*shellMock, run(_)).WillByDefault(Return(0));
+    ON_CALL(*shellMock, run(_, _))
         .WillByDefault(DoAll(SetArgReferee<1>(sttjson), Return(0)));
-    EXPECT_CALL(*commandMock, run(_)).Times(1);
-    EXPECT_CALL(*commandMock, run(_, _)).Times(1);
-    auto stt = std::make_unique<stt::TextFromVoice>(commandMock,
-                                                    stt::language::english);
+    EXPECT_CALL(*shellMock, run(_)).Times(1);
+    EXPECT_CALL(*shellMock, run(_, _)).Times(1);
+    auto stt =
+        std::make_unique<stt::TextFromVoice>(shellMock, stt::language::english);
     auto [text, quality] = stt->listen();
 
     EXPECT_EQ(text, initialtext);
@@ -52,13 +52,13 @@ TEST_F(TestStt, testSttEmptyTextShellCmdCalledTwice)
         "\"confidence\":" +
         std::to_string(initialconfid) +
         "}],\"final\":true}],\"result_index\":0}"};
-    ON_CALL(*commandMock, run(_)).WillByDefault(Return(0));
-    ON_CALL(*commandMock, run(_, _))
+    ON_CALL(*shellMock, run(_)).WillByDefault(Return(0));
+    ON_CALL(*shellMock, run(_, _))
         .WillByDefault(DoAll(SetArgReferee<1>(sttjson), Return(0)));
-    EXPECT_CALL(*commandMock, run(_)).Times(1);
-    EXPECT_CALL(*commandMock, run(_, _)).Times(1);
-    auto stt = std::make_unique<stt::TextFromVoice>(commandMock,
-                                                    stt::language::english);
+    EXPECT_CALL(*shellMock, run(_)).Times(1);
+    EXPECT_CALL(*shellMock, run(_, _)).Times(1);
+    auto stt =
+        std::make_unique<stt::TextFromVoice>(shellMock, stt::language::english);
     auto [text, quality] = stt->listen();
 
     EXPECT_EQ(text, initialtext);
@@ -76,13 +76,13 @@ TEST_F(TestStt, testSttFactoryValidTextShellCmdCalledTwice)
         "\"confidence\":" +
         std::to_string(initialconfid) +
         "}],\"final\":true}],\"result_index\":0}"};
-    ON_CALL(*commandMock, run(_)).WillByDefault(Return(0));
-    ON_CALL(*commandMock, run(_, _))
+    ON_CALL(*shellMock, run(_)).WillByDefault(Return(0));
+    ON_CALL(*shellMock, run(_, _))
         .WillByDefault(DoAll(SetArgReferee<1>(sttjson), Return(0)));
-    EXPECT_CALL(*commandMock, run(_)).Times(1);
-    EXPECT_CALL(*commandMock, run(_, _)).Times(1);
+    EXPECT_CALL(*shellMock, run(_)).Times(1);
+    EXPECT_CALL(*shellMock, run(_, _)).Times(1);
     auto stt =
-        stt::TextFromVoiceFactory::create(commandMock, stt::language::english);
+        stt::TextFromVoiceFactory::create(shellMock, stt::language::english);
     auto [text, quality] = stt->listen();
 
     EXPECT_EQ(text, initialtext);
@@ -100,13 +100,13 @@ TEST_F(TestStt, testSttFactoryEmptyTextShellCmdCalledTwice)
         "\"confidence\":" +
         std::to_string(initialconfid) +
         "}],\"final\":true}],\"result_index\":0}"};
-    ON_CALL(*commandMock, run(_)).WillByDefault(Return(0));
-    ON_CALL(*commandMock, run(_, _))
+    ON_CALL(*shellMock, run(_)).WillByDefault(Return(0));
+    ON_CALL(*shellMock, run(_, _))
         .WillByDefault(DoAll(SetArgReferee<1>(sttjson), Return(0)));
-    EXPECT_CALL(*commandMock, run(_)).Times(1);
-    EXPECT_CALL(*commandMock, run(_, _)).Times(1);
+    EXPECT_CALL(*shellMock, run(_)).Times(1);
+    EXPECT_CALL(*shellMock, run(_, _)).Times(1);
     auto stt =
-        stt::TextFromVoiceFactory::create(commandMock, stt::language::english);
+        stt::TextFromVoiceFactory::create(shellMock, stt::language::english);
     auto [text, quality] = stt->listen();
 
     EXPECT_EQ(text, initialtext);

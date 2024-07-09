@@ -22,8 +22,8 @@ static constexpr const char* resultSignature = "transcript";
 static const std::unordered_map<language, std::string> langMap = {
     {language::english, "en"}, {language::polish, "pl"}};
 
-TextFromVoice::TextFromVoice(std::shared_ptr<ShellCommand> commandHandler,
-                             language langOfVoice) :
+TextFromVoice::TextFromVoice(
+    std::shared_ptr<shell::ShellCommand> commandHandler, language langOfVoice) :
     commandHandler{commandHandler},
     languageId{langMap.at(langOfVoice)}
 {
@@ -109,12 +109,12 @@ inline void TextFromVoice::run()
 
 std::shared_ptr<TextFromVoiceIf> TextFromVoiceFactory::create(language lang)
 {
-    auto shell = std::make_shared<BashCommand>();
+    auto shell = std::make_shared<shell::BashCommand>();
     return create(shell, lang);
 }
 
 std::shared_ptr<TextFromVoiceIf>
-    TextFromVoiceFactory::create(std::shared_ptr<ShellCommand> shell,
+    TextFromVoiceFactory::create(std::shared_ptr<shell::ShellCommand> shell,
                                  language lang)
 {
     return std::make_shared<TextFromVoice>(shell, lang);
