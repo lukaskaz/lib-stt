@@ -4,8 +4,6 @@
 #include <nlohmann/json.hpp>
 
 #include <cmath>
-#include <fstream>
-#include <iostream>
 #include <unordered_map>
 
 using json = nlohmann::json;
@@ -28,9 +26,10 @@ void TextFromVoiceIf::kill()
 }
 
 TextFromVoice::TextFromVoice(
-    std::shared_ptr<shell::ShellCommand> commandHandler, language langOfVoice) :
+    std::shared_ptr<shell::ShellCommand> commandHandler,
+    std::shared_ptr<helpers::HelpersIf> helpers, language langOfVoice) :
     commandHandler{commandHandler},
-    languageId{langMap.at(langOfVoice)}
+    helpers{helpers}, languageId{langMap.at(langOfVoice)}
 {
     std::ifstream configFile(configFilePath);
     if (!configFile.is_open())
@@ -58,16 +57,23 @@ TextFromVoice::~TextFromVoice()
 
 std::pair<std::string, uint32_t> TextFromVoice::listen()
 {
-    run();
-
-    json data = json::parse(std::move(result));
-    json& first = data["result"][0]["alternative"][0];
-    std::string sttText = first["transcript"];
-    double sttConfid = first["confidence"];
-    auto quality = (uint32_t)std::lround(100 * sttConfid);
-
-    result.clear();
-    return std::make_pair(std::move(sttText), quality);
+    auto result = run();
+    if (auto startpos = result.find("{\"transcript\"");
+        startpos != std::string::npos)
+    {
+        if (auto endpos = result.substr(startpos).find("}");
+            endpos != std::string::npos)
+        {
+            auto jsondata{result.substr(startpos, endpos + 1)};
+            // std::cout << "stt json: " << jsondata << std::endl;
+            json first = json::parse(std::move(jsondata));
+            std::string text = first["transcript"];
+            double confid = first["confidence"];
+            auto quality = (uint32_t)std::lround(100 * confid);
+            return {std::move(text), quality};
+        }
+    }
+    return {};
 }
 
 inline void TextFromVoice::init()
@@ -78,38 +84,25 @@ inline void TextFromVoice::init()
     recordVoiceCmd = "sox --no-show-progress --type alsa default --rate 16000 "
                      "--channels 1 " +
                      audioFilePath + " silence -l 1 1 2% 1 1.5 1% pad 0.2 0.5";
-    getTextFromVoiceCmd =
-        "wget --quiet --user-agent \"Mozilla/5.0\" --post-file " +
-        audioFilePath +
-        " --header \"Content-Type: audio/x-flac; "
-        "rate=16000\" -O - \"" +
-        stt::convUri + "?lang=" + languageId + "&key=" + usageKey + "\"";
+    textFromVoiceUrl =
+        std::string(stt::convUri) + "?lang=" + languageId + "&key=" + usageKey;
 }
 
-inline void TextFromVoice::run()
+inline std::string TextFromVoice::run()
 {
-    while (result.empty())
+    while (true)
     {
-        if (commandHandler->run(std::move(recordVoiceCmd)))
+        if (!commandHandler->run(std::move(recordVoiceCmd)))
         {
-            continue;
-        }
-
-        std::vector<std::string> output;
-        if (commandHandler->run(std::move(getTextFromVoiceCmd), output))
-        {
-            continue;
-        }
-
-        for (auto&& resp : output)
-        {
-            if (resp.find(stt::resultSignature) != std::string::npos)
+            std::string result;
+            if (helpers->uploadFile(textFromVoiceUrl, audioFilePath, result) &&
+                result.contains(stt::resultSignature))
             {
-                result = std::move(resp);
-                break;
+                return result;
             }
         }
     }
+    return {};
 }
 
 std::shared_ptr<TextFromVoiceIf> TextFromVoiceFactory::create(language lang)
@@ -122,7 +115,8 @@ std::shared_ptr<TextFromVoiceIf>
     TextFromVoiceFactory::create(std::shared_ptr<shell::ShellCommand> shell,
                                  language lang)
 {
-    return std::make_shared<TextFromVoice>(shell, lang);
+    auto helpers = helpers::HelpersFactory::create();
+    return std::make_shared<TextFromVoice>(shell, helpers, lang);
 }
 
 } // namespace stt

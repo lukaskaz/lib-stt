@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 project(stt)
 
 include(cmake/flags.cmake)
@@ -21,4 +21,4 @@ file(GLOB SOURCES "src/*.cpp")
 add_library(${PROJECT_NAME} ${SOURCES})
 add_dependencies(${PROJECT_NAME} libshellcmd)
 add_dependencies(${PROJECT_NAME} libnlohmann)
-target_link_libraries(${PROJECT_NAME} shellcmd Boost::filesystem)
+target_link_libraries(${PROJECT_NAME} shellcmd Boost::filesystem CURL::libcurl)
