@@ -79,11 +79,12 @@ std::pair<std::string, uint32_t> TextFromVoice::listen()
 inline void TextFromVoice::init()
 {
     boost::filesystem::create_directory(stt::audioDirectory);
+
     audioFilePath =
         std::string{stt::audioDirectory} + std::string{stt::recordingName};
-    recordVoiceCmd = "sox --no-show-progress --type alsa default --rate 16000 "
-                     "--channels 1 " +
-                     audioFilePath + " silence -l 1 1 2% 1 1.5 1% pad 0.2 0.5";
+    recordVoiceCmd =
+        "sox --no-show-progress --type alsa default --rate 16k --channels 1 " +
+        audioFilePath + " silence -l 1 0.1t 2.0% 1 1.0t 1.0% pad 0.2 0.2";
     textFromVoiceUrl =
         std::string(stt::convUri) + "?lang=" + languageId + "&key=" + usageKey;
 }
