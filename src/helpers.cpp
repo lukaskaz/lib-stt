@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <fstream>
 
-namespace helpers
+namespace ssthelpers
 {
 
 static size_t WriteFunction(char* data, size_t size, size_t nmemb,
@@ -52,4 +52,4 @@ std::shared_ptr<HelpersIf> HelpersFactory::create()
     return std::make_shared<Helpers>();
 }
 
-} // namespace helpers
+} // namespace ssthelpers

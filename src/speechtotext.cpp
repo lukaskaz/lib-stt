@@ -27,7 +27,7 @@ void TextFromVoiceIf::kill()
 
 TextFromVoice::TextFromVoice(
     std::shared_ptr<shell::ShellCommand> commandHandler,
-    std::shared_ptr<helpers::HelpersIf> helpers, language langOfVoice) :
+    std::shared_ptr<ssthelpers::HelpersIf> helpers, language langOfVoice) :
     commandHandler{commandHandler},
     helpers{helpers}, languageId{langMap.at(langOfVoice)}
 {
@@ -84,7 +84,7 @@ inline void TextFromVoice::init()
         std::string{stt::audioDirectory} + std::string{stt::recordingName};
     recordVoiceCmd =
         "sox --no-show-progress --type alsa default --rate 16k --channels 1 " +
-        audioFilePath + " silence -l 1 0.1t 2.0% 1 1.0t 1.0% pad 0.2 0.2";
+        audioFilePath + " silence -l 1 1 2.0% 1 1.0t 1.0% pad 0.3 0.2";
     textFromVoiceUrl =
         std::string(stt::convUri) + "?lang=" + languageId + "&key=" + usageKey;
 }
@@ -116,7 +116,7 @@ std::shared_ptr<TextFromVoiceIf>
     TextFromVoiceFactory::create(std::shared_ptr<shell::ShellCommand> shell,
                                  language lang)
 {
-    auto helpers = helpers::HelpersFactory::create();
+    auto helpers = ssthelpers::HelpersFactory::create();
     return std::make_shared<TextFromVoice>(shell, helpers, lang);
 }
 

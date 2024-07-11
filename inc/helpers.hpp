@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace helpers
+namespace ssthelpers
 {
 
 class HelpersIf
@@ -36,4 +36,4 @@ class HelpersFactory
     static std::shared_ptr<HelpersIf> create();
 };
 
-} // namespace helpers
+} // namespace ssthelpers

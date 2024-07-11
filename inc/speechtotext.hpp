@@ -27,14 +27,14 @@ class TextFromVoice : public TextFromVoiceIf
 {
   public:
     TextFromVoice(std::shared_ptr<shell::ShellCommand>,
-                  std::shared_ptr<helpers::HelpersIf>, language);
+                  std::shared_ptr<ssthelpers::HelpersIf>, language);
     ~TextFromVoice();
 
     std::pair<std::string, uint32_t> listen() override;
 
   private:
     std::shared_ptr<shell::ShellCommand> commandHandler;
-    std::shared_ptr<helpers::HelpersIf> helpers;
+    std::shared_ptr<ssthelpers::HelpersIf> helpers;
     const std::string languageId;
     std::string audioFilePath;
     std::string recordVoiceCmd;

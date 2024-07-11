@@ -4,7 +4,7 @@
 
 #include <gmock/gmock.h>
 
-class HelpersMock : public helpers::HelpersIf
+class HelpersMock : public ssthelpers::HelpersIf
 {
   public:
     MOCK_METHOD(bool, uploadFile,
