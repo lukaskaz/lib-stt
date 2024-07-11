@@ -34,7 +34,6 @@ bool Helpers::uploadFile(const std::string& url, const std::string& filepath,
             curl_easy_setopt(curl, CURLOPT_POST, 1);
             curl_easy_setopt(curl, CURLOPT_POSTFIELDS, &data[0]);
             curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, size);
-
             curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
             curl_easy_setopt(curl, CURLOPT_HTTPHEADER, hlist);
             curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteFunction);
