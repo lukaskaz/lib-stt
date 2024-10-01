@@ -40,9 +40,9 @@ jobs:
     - name: Preparing binary
       run: |
         mkdir build && cd build && cmake .. -DADD_BASIC=ON && make
-    - name: Executing program
+    - name: Executing googleapi program
       run: |
-        ./build/examples/basic/prog
+        ./build/examples/googleapi/googleapi
 
   test:
     name: Test
