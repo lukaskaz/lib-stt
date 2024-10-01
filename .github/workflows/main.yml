@@ -39,10 +39,10 @@ jobs:
          sox libsox-fmt-mp3 libcurl4-openssl-dev
     - name: Preparing binary
       run: |
-        mkdir build && cd build && cmake .. -DADD_BASIC=ON && make
-    - name: Executing program
+        mkdir build && cd build && cmake .. -DADD_EXAMPLES=ON && make
+    - name: Executing googleapi program
       run: |
-        ./build/examples/basic/prog
+        ./build/examples/googleapi/googleapi
 
   test:
     name: Test

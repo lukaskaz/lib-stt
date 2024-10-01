@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
-option(ADD_BASIC "Creates example basic" OFF)
+option(ADD_EXAMPLES "Creates examples" OFF)
 
-if(ADD_BASIC)
-    add_subdirectory(basic)
+if(ADD_EXAMPLES)
+    add_subdirectory(googleapi)
 endif()
