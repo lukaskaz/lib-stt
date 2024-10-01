@@ -1,6 +1,6 @@
 #include "mocks/mock_helpers.hpp"
 #include "mocks/mock_shell.hpp"
-#include "speechtotext.hpp"
+#include "stt/interfaces/googleapi.hpp"
 
 using namespace testing;
 
@@ -36,8 +36,8 @@ TEST_F(TestStt, testSttValidTextShellCmdAndHelpersCalledResultValid)
         .WillByDefault(DoAll(SetArgReferee<2>(resultjson), Return(true)));
     EXPECT_CALL(*shellMock, run(_)).Times(1);
     EXPECT_CALL(*helpersMock, uploadFile(_, _, _)).Times(1);
-    auto stt = std::make_unique<stt::TextFromVoice>(shellMock, helpersMock,
-                                                    stt::language::english);
+    auto stt = stt::TextFromVoiceFactory<stt::googleapi::TextFromVoice>::create(
+        shellMock, helpersMock, stt::language::english);
     auto [text, quality] = stt->listen();
 
     EXPECT_EQ(text, initialtext);
@@ -60,8 +60,8 @@ TEST_F(TestStt, testSttEmptyTextShellCmdAndHelpersCalledResultValid)
         .WillByDefault(DoAll(SetArgReferee<2>(resultjson), Return(true)));
     EXPECT_CALL(*shellMock, run(_)).Times(1);
     EXPECT_CALL(*helpersMock, uploadFile(_, _, _)).Times(1);
-    auto stt = std::make_unique<stt::TextFromVoice>(shellMock, helpersMock,
-                                                    stt::language::english);
+    auto stt = stt::TextFromVoiceFactory<stt::googleapi::TextFromVoice>::create(
+        shellMock, helpersMock, stt::language::english);
     auto [text, quality] = stt->listen();
 
     EXPECT_EQ(text, initialtext);
@@ -72,7 +72,7 @@ TEST_F(TestStt, testSttFactoryShellCmdCalledAndNoMockedHelpersThrow)
 {
     ON_CALL(*shellMock, run(_)).WillByDefault(Return(0));
     EXPECT_CALL(*shellMock, run(_)).Times(1);
-    auto stt =
-        stt::TextFromVoiceFactory::create(shellMock, stt::language::english);
+    auto stt = stt::TextFromVoiceFactory<stt::googleapi::TextFromVoice>::create(
+        shellMock, stt::language::english);
     EXPECT_THROW(stt->listen(), std::exception);
 }

@@ -1,15 +1,20 @@
-#include "speechtotext.hpp"
+#include "stt/interfaces/googleapi.hpp"
 
 #include <boost/filesystem.hpp>
 #include <nlohmann/json.hpp>
 
 #include <cmath>
+#include <fstream>
 #include <unordered_map>
-
-using json = nlohmann::json;
 
 namespace stt
 {
+
+namespace googleapi
+{
+
+using json = nlohmann::json;
+
 static constexpr const char* configFilePath = "../conf/init.json";
 static constexpr const char* audioDirectory = "audio/";
 static constexpr const char* recordingName = "recording.flac";
@@ -18,18 +23,15 @@ static constexpr const char* convUri =
 static constexpr const char* resultSignature = "transcript";
 
 static const std::unordered_map<language, std::string> langMap = {
-    {language::english, "en"}, {language::polish, "pl"}};
-
-void TextFromVoiceIf::kill()
-{
-    shell::BashCommand().run("killall -s KILL sox");
-}
+    {language::polish, "pl-PL"},
+    {language::english, "en-US"},
+    {language::german, "de-DE"}};
 
 TextFromVoice::TextFromVoice(
     std::shared_ptr<shell::ShellCommand> commandHandler,
     std::shared_ptr<ssthelpers::HelpersIf> helpers, language langOfVoice) :
     commandHandler{commandHandler},
-    helpers{helpers}, languageId{langMap.at(langOfVoice)}
+    helpers{helpers}
 {
     std::ifstream configFile(configFilePath);
     if (!configFile.is_open())
@@ -47,12 +49,14 @@ TextFromVoice::TextFromVoice(
         throw std::runtime_error("Cannot retrieve key for STT");
     }
     usageKey = sttConfig["key"];
+
+    setlang(langOfVoice);
     init();
 }
 
 TextFromVoice::~TextFromVoice()
 {
-    boost::filesystem::remove_all(stt::audioDirectory);
+    boost::filesystem::remove_all(audioDirectory);
 }
 
 std::pair<std::string, uint32_t> TextFromVoice::listen()
@@ -76,17 +80,27 @@ std::pair<std::string, uint32_t> TextFromVoice::listen()
     return {};
 }
 
+std::pair<std::string, uint32_t> TextFromVoice::listen(language lang)
+{
+    auto prevLanguageId{languageId};
+    setlang(lang);
+    init();
+    auto result = listen();
+    languageId = prevLanguageId;
+    init();
+    return result;
+}
+
 inline void TextFromVoice::init()
 {
-    boost::filesystem::create_directory(stt::audioDirectory);
+    boost::filesystem::create_directory(audioDirectory);
 
-    audioFilePath =
-        std::string{stt::audioDirectory} + std::string{stt::recordingName};
+    audioFilePath = std::string{audioDirectory} + std::string{recordingName};
     recordVoiceCmd =
         "sox --no-show-progress --type alsa default --rate 16k --channels 1 " +
         audioFilePath + " silence -l 1 1 2.0% 1 1.0t 1.0% pad 0.3 0.2";
     textFromVoiceUrl =
-        std::string(stt::convUri) + "?lang=" + languageId + "&key=" + usageKey;
+        std::string(convUri) + "?lang=" + languageId + "&key=" + usageKey;
 }
 
 inline std::string TextFromVoice::run()
@@ -97,7 +111,7 @@ inline std::string TextFromVoice::run()
         {
             std::string result;
             if (helpers->uploadFile(textFromVoiceUrl, audioFilePath, result) &&
-                result.contains(stt::resultSignature))
+                result.contains(resultSignature))
             {
                 return result;
             }
@@ -106,18 +120,13 @@ inline std::string TextFromVoice::run()
     return {};
 }
 
-std::shared_ptr<TextFromVoiceIf> TextFromVoiceFactory::create(language lang)
+inline void TextFromVoice::setlang(language lang)
 {
-    auto shell = std::make_shared<shell::BashCommand>();
-    return create(shell, lang);
+    static constexpr language defaultlang = {language::polish};
+    languageId =
+        langMap.contains(lang) ? langMap.at(lang) : langMap.at(defaultlang);
 }
 
-std::shared_ptr<TextFromVoiceIf>
-    TextFromVoiceFactory::create(std::shared_ptr<shell::ShellCommand> shell,
-                                 language lang)
-{
-    auto helpers = ssthelpers::HelpersFactory::create();
-    return std::make_shared<TextFromVoice>(shell, helpers, lang);
-}
+} // namespace googleapi
 
 } // namespace stt
