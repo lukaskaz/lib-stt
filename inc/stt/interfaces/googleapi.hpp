@@ -17,25 +17,16 @@ class TextFromVoice : public TextFromVoiceIf
   public:
     ~TextFromVoice();
 
-    std::pair<std::string, uint32_t> listen() override;
-    std::pair<std::string, uint32_t> listen(language) override;
+    transcript_t listen() override;
+    transcript_t listen(language) override;
 
   private:
     friend class TextFromVoiceFactory<TextFromVoice>;
     TextFromVoice(std::shared_ptr<shell::ShellCommand>,
-                  std::shared_ptr<ssthelpers::HelpersIf>, language);
+                  std::shared_ptr<stthelpers::HelpersIf>, language);
 
-    std::shared_ptr<shell::ShellCommand> commandHandler;
-    std::shared_ptr<ssthelpers::HelpersIf> helpers;
-    std::string languageId;
-    std::string audioFilePath;
-    std::string recordVoiceCmd;
-    std::string textFromVoiceUrl;
-    std::string usageKey;
-
-    void init();
-    std::string run();
-    void setlang(language);
+    struct Handler;
+    std::unique_ptr<Handler> handler;
 };
 
 } // namespace googleapi

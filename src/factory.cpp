@@ -1,6 +1,5 @@
 #include "stt/interfaces/googleapi.hpp"
 
-#include <boost/filesystem.hpp>
 #include <nlohmann/json.hpp>
 
 #include <cmath>
