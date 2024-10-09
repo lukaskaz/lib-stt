@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
 
-find_package(Boost 1.74.0 REQUIRED COMPONENTS filesystem)
 find_package(CURL REQUIRED)
 
 include(ExternalProject)
@@ -26,6 +25,7 @@ EXTERNALPROJECT_ADD(
 
 include_directories(${source_dir}/inc)
 link_directories(${build_dir}/build)
+
 set(source_dir "${CMAKE_BINARY_DIR}/libnlohmann-src")
 set(build_dir "${CMAKE_BINARY_DIR}/libnlohmann-build")
 
