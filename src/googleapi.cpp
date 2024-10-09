@@ -5,8 +5,8 @@
 #include <cmath>
 #include <filesystem>
 #include <fstream>
+#include <optional>
 #include <unordered_map>
-
 namespace stt
 {
 
@@ -95,7 +95,7 @@ struct TextFromVoice::Handler
             setlang(lang);
         }
 
-        transcript_t gettranscript()
+        std::optional<transcript_t> gettranscript()
         {
             std::string result;
             helpers->uploadFile(url, audioFilePath, result);
@@ -111,13 +111,14 @@ struct TextFromVoice::Handler
                     auto text = first["transcript"].get<std::string>();
                     auto confid = first["confidence"].get<double>();
                     auto quality = (uint32_t)std::lround(100 * confid);
-                    return {std::move(text), quality};
+                    return std::make_optional<transcript_t>(std::move(text),
+                                                            quality);
                 }
             }
-            return {};
+            return std::nullopt;
         }
 
-        transcript_t gettranscript(language tmplang)
+        std::optional<transcript_t> gettranscript(language tmplang)
         {
             const auto mainlang{lang};
             setlang(tmplang);
@@ -157,9 +158,9 @@ transcript_t TextFromVoice::listen()
     {
         handler->shell->run(recordAudioCmd);
         if (auto transcript = handler->google.gettranscript();
-            !transcript.first.empty())
+            transcript.has_value())
         {
-            return transcript;
+            return *transcript;
         }
     }
     return {};
@@ -171,9 +172,9 @@ transcript_t TextFromVoice::listen(language lang)
     {
         handler->shell->run(recordAudioCmd);
         if (auto transcript = handler->google.gettranscript(lang);
-            !transcript.first.empty())
+            transcript.has_value())
         {
-            return transcript;
+            return *transcript;
         }
     }
     return {};
