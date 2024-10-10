@@ -1,7 +1,8 @@
 #include "mocks/mock_helpers.hpp"
 #include "mocks/mock_shell.hpp"
 #include "stt/interfaces/googleapi.hpp"
-#include "stt/interfaces/googlecloud.hpp"
+#include "stt/interfaces/v1/googlecloud.hpp"
+#include "stt/interfaces/v2/googlecloud.hpp"
 
 using namespace testing;
 
@@ -117,23 +118,46 @@ TEST_F(TestStt, googleApiShellCmdCalledAndNoMockedHelpersUsed_ListenThrows)
     EXPECT_THROW(stt->listen(), std::exception);
 }
 
-TEST_F(TestStt, googleCloudShellCmdCalledAndNoMockedHelpersUsed_ListenThrows)
+TEST_F(TestStt, googleCloudV1ShellCmdCalledAndNoMockedHelpersUsed_ListenThrows)
 {
     ON_CALL(*shellMock, run(_)).WillByDefault(Return(0));
     EXPECT_CALL(*shellMock, run(_)).Times(1);
     auto stt =
-        stt::TextFromVoiceFactory<stt::googlecloud::TextFromVoice>::create(
+        stt::TextFromVoiceFactory<stt::googlecloud::v1::TextFromVoice>::create(
             shellMock, stt::language::english);
     EXPECT_THROW(stt->listen(), std::runtime_error);
 }
 
-TEST_F(TestStt,
-       googleCloudShellCmdCalledAndNoMockedHelpersUsed_ListenChangedLangThrows)
+TEST_F(
+    TestStt,
+    googleCloudV1ShellCmdCalledAndNoMockedHelpersUsed_ListenChangedLangThrows)
 {
     ON_CALL(*shellMock, run(_)).WillByDefault(Return(0));
     EXPECT_CALL(*shellMock, run(_)).Times(1);
     auto stt =
-        stt::TextFromVoiceFactory<stt::googlecloud::TextFromVoice>::create(
+        stt::TextFromVoiceFactory<stt::googlecloud::v1::TextFromVoice>::create(
+            shellMock, stt::language::english);
+    EXPECT_THROW(stt->listen(stt::language::polish), std::runtime_error);
+}
+
+TEST_F(TestStt, googleCloudV2ShellCmdCalledAndNoMockedHelpersUsed_ListenThrows)
+{
+    ON_CALL(*shellMock, run(_)).WillByDefault(Return(0));
+    EXPECT_CALL(*shellMock, run(_)).Times(1);
+    auto stt =
+        stt::TextFromVoiceFactory<stt::googlecloud::v2::TextFromVoice>::create(
+            shellMock, stt::language::english);
+    EXPECT_THROW(stt->listen(), std::runtime_error);
+}
+
+TEST_F(
+    TestStt,
+    googleCloudV2ShellCmdCalledAndNoMockedHelpersUsed_ListenChangedLangThrows)
+{
+    ON_CALL(*shellMock, run(_)).WillByDefault(Return(0));
+    EXPECT_CALL(*shellMock, run(_)).Times(1);
+    auto stt =
+        stt::TextFromVoiceFactory<stt::googlecloud::v2::TextFromVoice>::create(
             shellMock, stt::language::english);
     EXPECT_THROW(stt->listen(stt::language::polish), std::runtime_error);
 }

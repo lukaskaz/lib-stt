@@ -1,4 +1,4 @@
-#include "stt/interfaces/googlecloud.hpp"
+#include "stt/interfaces/v2/googlecloud.hpp"
 
 #include <iomanip>
 #include <iostream>
@@ -8,7 +8,7 @@ int main()
 {
     try
     {
-        using namespace stt::googlecloud;
+        using namespace stt::googlecloud::v2;
         auto stt = stt::TextFromVoiceFactory<TextFromVoice>::create(
             stt::language::polish);
         std::cout << "Speak now in polish ...\n";

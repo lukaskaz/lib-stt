@@ -6,10 +6,7 @@
 #include <memory>
 #include <string>
 
-namespace stt
-{
-
-namespace googlecloud
+namespace stt::googlecloud::v1
 {
 
 class TextFromVoice : public TextFromVoiceIf
@@ -29,6 +26,4 @@ class TextFromVoice : public TextFromVoiceIf
     std::unique_ptr<Handler> handler;
 };
 
-} // namespace googlecloud
-
-} // namespace stt
+} // namespace stt::googlecloud::v1
