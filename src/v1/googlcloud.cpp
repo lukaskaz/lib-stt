@@ -3,7 +3,7 @@
 #include "google/cloud/project.h"
 #include "google/cloud/speech/v1/speech_client.h"
 
-#include "stt/interfaces/googlecloud.hpp"
+#include "stt/interfaces/v1/googlecloud.hpp"
 
 #include <cmath>
 #include <filesystem>
@@ -11,17 +11,14 @@
 #include <optional>
 #include <unordered_map>
 
-namespace stt
-{
-
-namespace googlecloud
+namespace stt::googlecloud::v1
 {
 
 namespace speech = google::cloud::speech::v1;
 namespace speech_type = google::cloud::speech_v1;
 
 static const std::string audioDirectory = "audio/";
-static const std::string recordingName = "recording.flac";
+static const std::string recordingName = "recording.wav";
 static const std::string audioFilePath = audioDirectory + recordingName;
 static const std::string recordAudioCmd =
     "sox --no-show-progress --type alsa default --rate 16k --channels 1 " +
@@ -88,14 +85,15 @@ struct TextFromVoice::Handler
                                     {});
                             }(keyfile))))}
         {
-            request.mutable_config()->set_profanity_filter(false);
-            request.mutable_config()->set_use_enhanced(false);
-            request.mutable_config()->set_model("latest_short");
-            request.mutable_config()->set_encoding(
-                speech::RecognitionConfig::FLAC);
-            request.mutable_config()->set_sample_rate_hertz(16000);
-            request.mutable_config()->set_audio_channel_count(1);
-            request.mutable_config()->set_max_alternatives(1);
+            const auto& config = request.mutable_config();
+            config->set_profanity_filter(false);
+            config->set_use_enhanced(false);
+            config->set_model("latest_short");
+            // config->set_encoding(speech::RecognitionConfig::FLAC);
+            config->set_encoding(speech::RecognitionConfig::LINEAR16);
+            config->set_sample_rate_hertz(16000);
+            config->set_audio_channel_count(1);
+            config->set_max_alternatives(1);
             setlang(lang);
         }
 
@@ -172,6 +170,7 @@ transcript_t TextFromVoice::listen()
         {
             return *transcript;
         }
+        std::cout << "Cannot get transcipt, repeat...\n";
     }
     return {};
 }
@@ -187,10 +186,9 @@ transcript_t TextFromVoice::listen(language lang)
         {
             return *transcript;
         }
+        std::cout << "Cannot get transcipt, repeat...\n";
     }
     return {};
 }
 
-} // namespace googlecloud
-
-} // namespace stt
+} // namespace stt::googlecloud::v1

@@ -16,7 +16,7 @@ endif()
 add_subdirectory(examples)
 
 include_directories(inc)
-file(GLOB SOURCES "src/*.cpp")
+file(GLOB_RECURSE SOURCES "src/*.cpp")
 
 add_library(${PROJECT_NAME} ${SOURCES})
 add_dependencies(${PROJECT_NAME} libshellcmd)

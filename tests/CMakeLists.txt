@@ -17,7 +17,7 @@ if(COVERAGE)
 endif()
 
 include_directories(../inc)
-file(GLOB APP_SOURCES "../src/*.cpp")
+file(GLOB_RECURSE APP_SOURCES "../src/*.cpp")
 list(FILTER APP_SOURCES EXCLUDE REGEX "^.*/(main)\\.cpp$")
 
 include_directories(inc)
