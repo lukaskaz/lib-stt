@@ -4,4 +4,5 @@ option(ADD_EXAMPLES "Creates examples" OFF)
 
 if(ADD_EXAMPLES)
     add_subdirectory(googleapi)
+    add_subdirectory(googlecloud)
 endif()

@@ -56,3 +56,19 @@ $ readlink -f ~/.asoundrc
 $ readlink -f /etc/modprobe.d/alsa-base.conf
 /etc/modprobe.d/alsa-base.conf
 
+# installing and use 
+git clone https://github.com/microsoft/vcpkg.git
+export VCPKG_FORCE_SYSTEM_BINARIES=1
+cd vcpkg && sh bootstrap-vcpkg.sh -disableMetrics
+## ~/git/vcpkg/vcpkg install google-cloud-cpp[core,speech,texttospeech]
+~/git/vcpkg/vcpkg install google-cloud-cpp[core,speech]
+cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=~/git/vcpkg/scripts/buildsystems/vcpkg.cmake -DADD_EXAMPLES=ON ..
+cd build
+# OR #
+mkdir build && cd build
+cmake -DCMAKE_TOOLCHAIN_FILE=~/git/vcpkg/scripts/buildsystems/vcpkg.cmake -DADD_EXAMPLES=ON ..
+export GOOGLE_APPLICATION_CREDENTIALS="../conf/keyfile.json"
+
+UTs:
+mkdir build && cd build
+cmake -DCMAKE_TOOLCHAIN_FILE=~/git/vcpkg/scripts/buildsystems/vcpkg.cmake ..
