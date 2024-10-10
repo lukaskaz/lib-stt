@@ -17,20 +17,20 @@ namespace stt::googlecloud::v2
 
 namespace speech = google::cloud::speech::v2;
 namespace speech_type = google::cloud::speech_v2;
-using locale_t = std::tuple<std::string, std::string, std::string, std::string>;
+using recognizer_t =
+    std::tuple<std::string, std::string, std::string, std::string>;
 
 static const std::string audioDirectory = "audio/";
 static const std::string recordingName = "recording.wav";
 static const std::string audioFilePath = audioDirectory + recordingName;
 static const std::string recordAudioCmd =
-    "sox --no-show-progress --type alsa default --rate 16k --channels 1 " +
+    "sox --no-show-progress --type alsa default --rate 8k --channels 1 " +
     audioFilePath + " silence -l 1 1 2.0% 1 1.0t 1.0% pad 0.3 0.2";
 static const std::string keyFile = "../conf/key.json";
-static const locale_t localeInfo = {"lukaszsttproject", "europe-west4",
-                                    "stt-region", "chirp_2"};
-// static const locale_t localeInfo = {"lukaszsttproject", "global",
-// "stt-global",
-//                                     "short"};
+static const recognizer_t recognizerInfo = {"lukaszsttproject", "europe-west4",
+                                            "stt-region", "chirp_2"};
+// static const recognizer_t recognizerInfo = {"lukaszsttproject", "global",
+//                                             "stt-global", "short"};
 
 static const std::unordered_map<language, std::string> langMap = {
     {language::polish, "pl-PL"}};
@@ -43,7 +43,8 @@ struct TextFromVoice::Handler
 {
   public:
     Handler(std::shared_ptr<shell::ShellCommand> shell) :
-        shell{shell}, filesystem{audioDirectory}, google{keyFile, localeInfo}
+        shell{shell}, filesystem{audioDirectory},
+        google{keyFile, recognizerInfo}
     {}
 
     std::shared_ptr<shell::ShellCommand> shell;
@@ -77,9 +78,9 @@ struct TextFromVoice::Handler
     class Google
     {
       public:
-        Google(const std::string& keyfile, locale_t locale) :
+        Google(const std::string& keyfile, recognizer_t recognizer) :
             client{speech_type::MakeSpeechConnection(
-                std::get<1>(locale),
+                std::get<1>(recognizer),
                 google::cloud::Options{}
                     .set<google::cloud::UnifiedCredentialsOption>(
                         google::cloud::MakeServiceAccountCredentials(
@@ -98,10 +99,10 @@ struct TextFromVoice::Handler
             const auto& config = request.mutable_config();
             // const auto& features = config->mutable_features();
             *config->mutable_auto_decoding_config() = {};
-            config->set_model(std::get<3>(locale));
-            request.set_recognizer("projects/" + std::get<0>(locale) +
-                                   "/locations/" + std::get<1>(locale) +
-                                   "/recognizers/" + std::get<2>(locale));
+            config->set_model(std::get<3>(recognizer));
+            request.set_recognizer("projects/" + std::get<0>(recognizer) +
+                                   "/locations/" + std::get<1>(recognizer) +
+                                   "/recognizers/" + std::get<2>(recognizer));
             std::ranges::for_each(langMap, [this](const auto& id) {
                 request.mutable_config()->add_language_codes(id.second);
             });
@@ -109,13 +110,15 @@ struct TextFromVoice::Handler
 
         void uploadaudio(const std::string& filepath)
         {
-            std::ifstream ifs(filepath);
-            if (!ifs.is_open())
-            {
-                throw std::runtime_error("Cannot open audio file for STT");
-            }
-            request.set_content(
-                std::string(std::istreambuf_iterator<char>(ifs.rdbuf()), {}));
+            request.set_content([](const std::string file) {
+                std::ifstream ifs(file, std::ios::in | std::ios::binary);
+                if (!ifs.is_open())
+                {
+                    throw std::runtime_error("Cannot open audio file for STT");
+                }
+                return std::string(std::istreambuf_iterator<char>(ifs.rdbuf()),
+                                   {});
+            }(filepath));
         }
 
         std::optional<transcript_t> gettranscript()
@@ -160,6 +163,7 @@ transcript_t TextFromVoice::listen()
         {
             return *transcript;
         }
+        std::cout << "Cannot get transcipt, repeat...\n";
     }
     return {};
 }

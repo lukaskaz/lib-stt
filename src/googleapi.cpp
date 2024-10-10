@@ -5,6 +5,7 @@
 #include <cmath>
 #include <filesystem>
 #include <fstream>
+#include <iostream>
 #include <optional>
 #include <unordered_map>
 namespace stt
@@ -162,6 +163,7 @@ transcript_t TextFromVoice::listen()
         {
             return *transcript;
         }
+        std::cout << "Cannot get transcipt, repeat...\n";
     }
     return {};
 }
@@ -176,6 +178,7 @@ transcript_t TextFromVoice::listen(language lang)
         {
             return *transcript;
         }
+        std::cout << "Cannot get transcipt, repeat...\n";
     }
     return {};
 }

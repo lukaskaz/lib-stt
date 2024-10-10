@@ -170,6 +170,7 @@ transcript_t TextFromVoice::listen()
         {
             return *transcript;
         }
+        std::cout << "Cannot get transcipt, repeat...\n";
     }
     return {};
 }
@@ -185,6 +186,7 @@ transcript_t TextFromVoice::listen(language lang)
         {
             return *transcript;
         }
+        std::cout << "Cannot get transcipt, repeat...\n";
     }
     return {};
 }

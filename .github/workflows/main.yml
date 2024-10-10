@@ -51,8 +51,8 @@ jobs:
     - name: Executing googleapi program
       run: |
         ./build/examples/googleapi/googleapi
-        ./build/examples/googlecloud/v1/googlecloud
-        ./build/examples/googlecloud/v2/googlecloud
+        ./build/examples/googlecloud/v1/googlecloudv1
+        ./build/examples/googlecloud/v2/googlecloudv2
 
   test:
     name: Test
