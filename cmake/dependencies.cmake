@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 
 find_package(CURL REQUIRED)
+find_package(google_cloud_cpp_speech REQUIRED)
 
 include(ExternalProject)
 
