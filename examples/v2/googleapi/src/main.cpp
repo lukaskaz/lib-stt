@@ -1,14 +1,24 @@
-#include "stt/interfaces/googleapi.hpp"
+#include "stt/interfaces/v2/googleapi.hpp"
+
+#include <signal.h>
 
 #include <iomanip>
 #include <iostream>
 #include <memory>
 
+void signalhandler(int signum)
+{
+    stt::TextFromVoiceIf::kill();
+    exit(signum);
+}
+
 int main()
 {
     try
     {
-        using namespace stt::googleapi;
+        signal(SIGINT, signalhandler);
+
+        using namespace stt::v2::googleapi;
         auto stt = stt::TextFromVoiceFactory<TextFromVoice>::create(
             stt::language::polish);
         std::cout << "Speak now in polish ...\n";

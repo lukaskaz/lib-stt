@@ -5,18 +5,18 @@
 
 #include "stt/interfaces/v2/googlecloud.hpp"
 
-#include <algorithm>
 #include <cmath>
 #include <filesystem>
 #include <fstream>
 #include <optional>
 #include <unordered_map>
 
-namespace stt::googlecloud::v2
+namespace stt::v2::googlecloud
 {
 
 namespace speech = google::cloud::speech::v2;
 namespace speech_type = google::cloud::speech_v2;
+
 using recognizer_t =
     std::tuple<std::string, std::string, std::string, std::string>;
 
@@ -27,24 +27,22 @@ static const std::string recordAudioCmd =
     "sox --no-show-progress --type alsa default --rate 8k --channels 1 " +
     audioFilePath + " silence -l 1 1 2.0% 1 1.0t 1.0% pad 0.3 0.2";
 static const std::string keyFile = "../conf/key.json";
-static const recognizer_t recognizerInfo = {"lukaszsttproject", "europe-west4",
-                                            "stt-region", "chirp_2"};
-// static const recognizer_t recognizerInfo = {"lukaszsttproject", "global",
-//                                             "stt-global", "short"};
+// static const recognizer_t recognizerInfo = {"lukaszsttproject",
+// "europe-west4", "stt-region", "chirp_2"};
+static const recognizer_t recognizerInfo = {"lukaszsttproject", "eu",
+                                            "stt-global", "short"};
 
 static const std::unordered_map<language, std::string> langMap = {
-    {language::polish, "pl-PL"}};
-// static const std::unordered_map<language, std::string> langMap = {
-//     {language::polish, "pl-PL"},
-//     {language::english, "en-US"},
-//     {language::german, "de-DE"}};
+    {language::polish, "pl-PL"},
+    {language::english, "en-US"},
+    {language::german, "de-DE"}};
 
 struct TextFromVoice::Handler
 {
   public:
-    Handler(std::shared_ptr<shell::ShellCommand> shell) :
+    Handler(std::shared_ptr<shell::ShellCommand> shell, language lang) :
         shell{shell}, filesystem{audioDirectory},
-        google{keyFile, recognizerInfo}
+        google{keyFile, recognizerInfo, lang}
     {}
 
     std::shared_ptr<shell::ShellCommand> shell;
@@ -78,7 +76,8 @@ struct TextFromVoice::Handler
     class Google
     {
       public:
-        Google(const std::string& keyfile, recognizer_t recognizer) :
+        Google(const std::string& keyfile, recognizer_t recognizer,
+               language lang) :
             client{speech_type::MakeSpeechConnection(
                 std::get<1>(recognizer),
                 google::cloud::Options{}
@@ -94,18 +93,16 @@ struct TextFromVoice::Handler
                                 return std::string(
                                     std::istreambuf_iterator<char>(ifs.rdbuf()),
                                     {});
-                            }(keyfile))))}
+                            }(keyfile))))},
+            lang{lang}
         {
             const auto& config = request.mutable_config();
-            // const auto& features = config->mutable_features();
             *config->mutable_auto_decoding_config() = {};
             config->set_model(std::get<3>(recognizer));
             request.set_recognizer("projects/" + std::get<0>(recognizer) +
                                    "/locations/" + std::get<1>(recognizer) +
                                    "/recognizers/" + std::get<2>(recognizer));
-            std::ranges::for_each(langMap, [this](const auto& id) {
-                request.mutable_config()->add_language_codes(id.second);
-            });
+            setlang(lang);
         }
 
         void uploadaudio(const std::string& filepath)
@@ -123,31 +120,55 @@ struct TextFromVoice::Handler
 
         std::optional<transcript_t> gettranscript()
         {
-            const auto& response = client.Recognize(request);
-            if (const auto& results = response->results(); !results.empty())
+            if (auto response = client.Recognize(request))
             {
-                if (const auto& alternatives = results.at(0).alternatives();
-                    !alternatives.empty())
+                for (const auto& result : response->results())
                 {
-                    const auto& first = alternatives.at(0);
-                    auto quality =
-                        (uint32_t)std::lround(100 * first.confidence());
-                    return std::make_optional<transcript_t>(
-                        std::move(first.transcript()), quality);
+                    for (const auto& alternative : result.alternatives())
+                    {
+                        auto text = alternative.transcript();
+                        if (text.empty())
+                            break;
+                        auto confid = alternative.confidence();
+                        auto quality = (uint32_t)std::lround(100 * confid);
+                        return std::make_optional<transcript_t>(std::move(text),
+                                                                quality);
+                    }
                 }
             }
             return std::nullopt;
         }
 
+        std::optional<transcript_t> gettranscript(language tmplang)
+        {
+            const auto mainlang{lang};
+            setlang(tmplang);
+            auto transcript = gettranscript();
+            setlang(mainlang);
+            return transcript;
+        }
+
       private:
         speech_type::SpeechClient client;
         speech::RecognizeRequest request;
+        language lang;
+
+        void setlang(language lang)
+        {
+            static constexpr auto defaultlang{language::polish};
+            this->lang = lang;
+            auto langId = langMap.contains(lang) ? langMap.at(lang)
+                                                 : langMap.at(defaultlang);
+            request.mutable_config()->clear_language_codes();
+            request.mutable_config()->add_language_codes(langId);
+        }
     } google;
 };
 
 TextFromVoice::TextFromVoice(std::shared_ptr<shell::ShellCommand> shell,
-                             std::shared_ptr<stthelpers::HelpersIf>, language) :
-    handler{std::make_unique<Handler>(shell)}
+                             std::shared_ptr<stthelpers::HelpersIf>,
+                             language lang) :
+    handler{std::make_unique<Handler>(shell, lang)}
 {}
 
 TextFromVoice::~TextFromVoice() = default;
@@ -163,14 +184,27 @@ transcript_t TextFromVoice::listen()
         {
             return *transcript;
         }
-        std::cout << "Cannot get transcipt, repeat...\n";
+        std::cerr << "Cannot get transcipt, repeating...\n";
+        break;
     }
     return {};
 }
 
-transcript_t TextFromVoice::listen(language)
+transcript_t TextFromVoice::listen(language lang)
 {
-    return listen();
+    while (true)
+    {
+        handler->shell->run(recordAudioCmd);
+        handler->google.uploadaudio(audioFilePath);
+        if (auto transcript = handler->google.gettranscript(lang);
+            transcript.has_value())
+        {
+            return *transcript;
+        }
+        std::cerr << "Cannot get transcipt, repeating...\n";
+        break;
+    }
+    return {};
 }
 
-} // namespace stt::googlecloud::v2
+} // namespace stt::v2::googlecloud

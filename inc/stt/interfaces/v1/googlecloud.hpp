@@ -6,13 +6,13 @@
 #include <memory>
 #include <string>
 
-namespace stt::googlecloud::v1
+namespace stt::v1::googlecloud
 {
 
 class TextFromVoice : public TextFromVoiceIf
 {
   public:
-    ~TextFromVoice();
+    virtual ~TextFromVoice();
 
     transcript_t listen() override;
     transcript_t listen(language) override;
@@ -26,4 +26,4 @@ class TextFromVoice : public TextFromVoiceIf
     std::unique_ptr<Handler> handler;
 };
 
-} // namespace stt::googlecloud::v1
+} // namespace stt::v1::googlecloud

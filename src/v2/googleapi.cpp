@@ -1,4 +1,4 @@
-#include "stt/interfaces/googleapi.hpp"
+#include "stt/interfaces/v2/googleapi.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -8,10 +8,8 @@
 #include <iostream>
 #include <optional>
 #include <unordered_map>
-namespace stt
-{
 
-namespace googleapi
+namespace stt::v2::googleapi
 {
 
 using json = nlohmann::json;
@@ -163,7 +161,7 @@ transcript_t TextFromVoice::listen()
         {
             return *transcript;
         }
-        std::cout << "Cannot get transcipt, repeat...\n";
+        std::cerr << "Cannot get transcipt, repeating...\n";
     }
     return {};
 }
@@ -178,11 +176,9 @@ transcript_t TextFromVoice::listen(language lang)
         {
             return *transcript;
         }
-        std::cout << "Cannot get transcipt, repeat...\n";
+        std::cerr << "Cannot get transcipt, repeating...\n";
     }
     return {};
 }
 
-} // namespace googleapi
-
-} // namespace stt
+} // namespace stt::v2::googleapi

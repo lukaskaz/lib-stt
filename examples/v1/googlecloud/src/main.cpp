@@ -1,14 +1,24 @@
 #include "stt/interfaces/v1/googlecloud.hpp"
 
+#include <signal.h>
+
 #include <iomanip>
 #include <iostream>
 #include <memory>
+
+void signalhandler(int signum)
+{
+    stt::TextFromVoiceIf::kill();
+    exit(signum);
+}
 
 int main()
 {
     try
     {
-        using namespace stt::googlecloud::v1;
+        signal(SIGINT, signalhandler);
+
+        using namespace stt::v1::googlecloud;
         auto stt = stt::TextFromVoiceFactory<TextFromVoice>::create(
             stt::language::polish);
         std::cout << "Speak now in polish ...\n";
