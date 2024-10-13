@@ -145,11 +145,13 @@ struct TextFromVoice::Handler
 
         void setlang(language lang)
         {
-            static constexpr auto defaultlang{language::polish};
-            this->lang = lang;
-            auto langId = langMap.contains(lang) ? langMap.at(lang)
-                                                 : langMap.at(defaultlang);
-            request.mutable_config()->set_language_code(langId);
+            request.mutable_config()->set_language_code(
+                [this](language newlang) {
+                    this->lang = newlang;
+                    static constexpr auto deflang{language::polish};
+                    return langMap.contains(newlang) ? langMap.at(newlang)
+                                                     : langMap.at(deflang);
+                }(lang));
         }
     } google;
 };

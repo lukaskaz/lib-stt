@@ -134,10 +134,12 @@ struct TextFromVoice::Handler
 
         void setlang(language lang)
         {
-            static constexpr auto defaultlang{language::polish};
-            this->lang = lang;
-            auto langId = langMap.contains(lang) ? langMap.at(lang)
-                                                 : langMap.at(defaultlang);
+            auto langId = [this](language newlang) {
+                this->lang = newlang;
+                static constexpr auto deflang{language::polish};
+                return langMap.contains(newlang) ? langMap.at(newlang)
+                                                 : langMap.at(deflang);
+            }(lang);
             url = std::string(convUri) + "?lang=" + langId + "&key=" + key;
         }
     } google;
