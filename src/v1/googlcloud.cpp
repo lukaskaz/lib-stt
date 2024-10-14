@@ -11,7 +11,7 @@
 #include <optional>
 #include <unordered_map>
 
-namespace stt::googlecloud::v1
+namespace stt::v1::googlecloud
 {
 
 namespace speech = google::cloud::speech::v1;
@@ -110,17 +110,20 @@ struct TextFromVoice::Handler
 
         std::optional<transcript_t> gettranscript()
         {
-            const auto& response = client.Recognize(request);
-            if (const auto& results = response->results(); !results.empty())
+            if (auto response = client.Recognize(request))
             {
-                if (const auto& alternatives = results.at(0).alternatives();
-                    !alternatives.empty())
+                for (const auto& result : response->results())
                 {
-                    const auto& first = alternatives.at(0);
-                    auto quality =
-                        (uint32_t)std::lround(100 * first.confidence());
-                    return std::make_optional<transcript_t>(
-                        std::move(first.transcript()), quality);
+                    for (const auto& alternative : result.alternatives())
+                    {
+                        auto text = alternative.transcript();
+                        if (text.empty())
+                            break;
+                        auto confid = alternative.confidence();
+                        auto quality = (uint32_t)std::lround(100 * confid);
+                        return std::make_optional<transcript_t>(std::move(text),
+                                                                quality);
+                    }
                 }
             }
             return std::nullopt;
@@ -142,11 +145,13 @@ struct TextFromVoice::Handler
 
         void setlang(language lang)
         {
-            static constexpr auto defaultlang{language::polish};
-            this->lang = lang;
-            auto langId = langMap.contains(lang) ? langMap.at(lang)
-                                                 : langMap.at(defaultlang);
-            request.mutable_config()->set_language_code(langId);
+            request.mutable_config()->set_language_code(
+                [this](language newlang) {
+                    this->lang = newlang;
+                    static constexpr auto deflang{language::polish};
+                    return langMap.contains(newlang) ? langMap.at(newlang)
+                                                     : langMap.at(deflang);
+                }(lang));
         }
     } google;
 };
@@ -170,7 +175,7 @@ transcript_t TextFromVoice::listen()
         {
             return *transcript;
         }
-        std::cout << "Cannot get transcipt, repeat...\n";
+        std::cerr << "Cannot get transcipt, repeating...\n";
     }
     return {};
 }
@@ -186,9 +191,9 @@ transcript_t TextFromVoice::listen(language lang)
         {
             return *transcript;
         }
-        std::cout << "Cannot get transcipt, repeat...\n";
+        std::cerr << "Cannot get transcipt, repeating...\n";
     }
     return {};
 }
 
-} // namespace stt::googlecloud::v1
+} // namespace stt::v1::googlecloud

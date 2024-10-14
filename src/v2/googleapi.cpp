@@ -1,4 +1,4 @@
-#include "stt/interfaces/googleapi.hpp"
+#include "stt/interfaces/v2/googleapi.hpp"
 
 #include <nlohmann/json.hpp>
 
@@ -8,10 +8,8 @@
 #include <iostream>
 #include <optional>
 #include <unordered_map>
-namespace stt
-{
 
-namespace googleapi
+namespace stt::v2::googleapi
 {
 
 using json = nlohmann::json;
@@ -136,10 +134,12 @@ struct TextFromVoice::Handler
 
         void setlang(language lang)
         {
-            static constexpr auto defaultlang{language::polish};
-            this->lang = lang;
-            auto langId = langMap.contains(lang) ? langMap.at(lang)
-                                                 : langMap.at(defaultlang);
+            auto langId = [this](language newlang) {
+                this->lang = newlang;
+                static constexpr auto deflang{language::polish};
+                return langMap.contains(newlang) ? langMap.at(newlang)
+                                                 : langMap.at(deflang);
+            }(lang);
             url = std::string(convUri) + "?lang=" + langId + "&key=" + key;
         }
     } google;
@@ -163,7 +163,7 @@ transcript_t TextFromVoice::listen()
         {
             return *transcript;
         }
-        std::cout << "Cannot get transcipt, repeat...\n";
+        std::cerr << "Cannot get transcipt, repeating...\n";
     }
     return {};
 }
@@ -178,11 +178,9 @@ transcript_t TextFromVoice::listen(language lang)
         {
             return *transcript;
         }
-        std::cout << "Cannot get transcipt, repeat...\n";
+        std::cerr << "Cannot get transcipt, repeating...\n";
     }
     return {};
 }
 
-} // namespace googleapi
-
-} // namespace stt
+} // namespace stt::v2::googleapi

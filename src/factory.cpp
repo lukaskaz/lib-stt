@@ -1,9 +1,4 @@
-#include "stt/interfaces/googleapi.hpp"
-
-#include <nlohmann/json.hpp>
-
-#include <cmath>
-#include <unordered_map>
+#include "stt/factory.hpp"
 
 namespace stt
 {

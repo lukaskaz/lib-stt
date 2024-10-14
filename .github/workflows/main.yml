@@ -50,9 +50,9 @@ jobs:
         make -j $(nproc)
     - name: Executing googleapi program
       run: |
-        ./build/examples/googleapi/googleapi
-        ./build/examples/googlecloud/v1/googlecloudv1
-        ./build/examples/googlecloud/v2/googlecloudv2
+        ./build/examples/v2/googleapi/googleapi
+        ./build/examples/v1/googlecloud/googlecloudv1
+        ./build/examples/v2/googlecloud/googlecloudv2
 
   test:
     name: Test
