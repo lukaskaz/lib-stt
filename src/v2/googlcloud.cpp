@@ -128,7 +128,7 @@ struct TextFromVoice::Handler
                     {
                         auto text = alternative.transcript();
                         if (text.empty())
-                            break;
+                            continue;
                         auto confid = alternative.confidence();
                         auto quality = (uint32_t)std::lround(100 * confid);
                         return std::make_optional<transcript_t>(std::move(text),
