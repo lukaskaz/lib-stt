@@ -1,0 +1,12 @@
+{
+  "name": "lib-stt",
+  "version-string": "1.0",
+  "dependencies": [
+    {
+      "name": "google-cloud-cpp",
+      "default-features": false,
+      "features": ["speech"]
+    }
+  ]
+}
+

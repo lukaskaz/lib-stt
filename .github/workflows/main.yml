@@ -19,14 +19,9 @@ jobs:
     - name: Setting up dependencies
       run: |
         sudo apt install libcurl4-openssl-dev
-    - name: Setting up google-cloud-cpp
-      run: |
-        vcpkg install google-cloud-cpp[core,speech]
     - name: Building target app
       run: |
-        mkdir build && cd build &&
-        cmake -DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake .. &&
-        make -j $(nproc)
+        mkdir build && cd build && cmake .. && make
       
   execution:
     name: Execution
@@ -40,14 +35,9 @@ jobs:
     - name: Setting up dependencies
       run: |
         sudo apt install sox libsox-fmt-mp3 libcurl4-openssl-dev
-    - name: Setting up google-cloud-cpp
-      run: |
-        vcpkg install google-cloud-cpp[core,speech]
     - name: Preparing binary
       run: |
-        mkdir build && cd build &&
-        cmake -DADD_EXAMPLES=ON -DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake .. &&
-        make -j $(nproc)
+        mkdir build && cd build && cmake -DADD_EXAMPLES=ON .. && make
     - name: Executing googleapi program
       run: |
         ./build/examples/v2/googleapi/googleapi
@@ -65,14 +55,9 @@ jobs:
     - name: Setting up dependencies
       run: |
         sudo apt install libcurl4-openssl-dev
-    - name: Setting up google-cloud-cpp
-      run: |
-        vcpkg install google-cloud-cpp[core,speech]
     - name: Building tests
       run: |
-        cd tests && mkdir build && cd build && 
-        cmake -DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake .. &&
-        make -j $(nproc)
+        cd tests && mkdir build && cd build && cmake .. && make
     - name: Running tests
       run: |
         ctest --output-on-failure --test-dir tests/build/
@@ -90,14 +75,10 @@ jobs:
       run: |
         sudo apt install libcurl4-openssl-dev lcov
         cd tests && git clone https://github.com/lukaskaz/coverage-checker.git
-    - name: Setting up google-cloud-cpp
-      run: |
-        vcpkg install google-cloud-cpp[core,speech]
     - name: Preparing tests
       run: |
-        cd tests && mkdir build && cd build &&
-        cmake -DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake .. &&
-        make -j $(nproc)
+        cd tests && mkdir build && cd build && cmake .. && make
     - name: Running coverage checker
       run: |
         cd tests/coverage-checker && ./run.sh ../build
+
