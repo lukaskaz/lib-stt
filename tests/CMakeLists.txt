@@ -6,13 +6,12 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-psabi")
 project(stt-ut)
 enable_testing()
 
-option(VCPKG_MANIFEST_MODE "Install vcpkg dependencies locally" ON)
-option(COVERAGE "Create test coverage report" ON)
-option(COVEXPORT "Export test coverage report" OFF)
-
 include($ENV{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake)  
 include(cmake/flags.cmake)
 include(cmake/dependencies.cmake)
+
+option(COVERAGE "Create test coverage report" ON)
+option(COVEXPORT "Export test coverage report" OFF)
 
 if(COVERAGE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --coverage -fprofile-arcs -ftest-coverage -fno-inline")
