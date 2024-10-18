@@ -2,30 +2,12 @@
 
 #include "shellcommand.hpp"
 #include "stt/helpers.hpp"
+#include "stt/interfaces/textfromvoice.hpp"
 
 #include <memory>
-#include <string>
 
 namespace stt
 {
-
-enum class language
-{
-    polish,
-    english,
-    german
-};
-
-using transcript_t = std::pair<std::string, uint32_t>;
-
-class TextFromVoiceIf
-{
-  public:
-    virtual ~TextFromVoiceIf() = default;
-    virtual transcript_t listen() = 0;
-    virtual transcript_t listen(language) = 0;
-    static void kill();
-};
 
 template <typename T>
 class TextFromVoiceFactory
