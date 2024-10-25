@@ -18,7 +18,7 @@ class TextFromVoice : public TextFromVoiceIf
     transcript_t listen(language) override;
 
   private:
-    friend class TextFromVoiceFactory<TextFromVoice>;
+    friend class stt::TextFromVoiceFactory;
     TextFromVoice(std::shared_ptr<shell::ShellCommand>,
                   std::shared_ptr<stthelpers::HelpersIf>, language);
 

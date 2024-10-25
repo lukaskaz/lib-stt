@@ -1,4 +1,6 @@
-#include "stt/factory.hpp"
+#include "stt/interfaces/textfromvoice.hpp"
+
+#include "shellcommand.hpp"
 
 namespace stt
 {

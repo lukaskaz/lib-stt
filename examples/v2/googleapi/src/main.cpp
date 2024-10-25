@@ -19,7 +19,7 @@ int main()
         signal(SIGINT, signalhandler);
 
         using namespace stt::v2::googleapi;
-        auto stt = stt::TextFromVoiceFactory<TextFromVoice>::create(
+        auto stt = stt::TextFromVoiceFactory::create<TextFromVoice>(
             stt::language::polish);
         std::cout << "Speak now in polish ...\n";
         auto result = stt->listen();

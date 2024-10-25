@@ -39,7 +39,7 @@ TEST_F(TestStt, googleApiValidTextShellCmdAndHelpersCalled_ResultValid)
     EXPECT_CALL(*shellMock, run(_)).Times(1);
     EXPECT_CALL(*helpersMock, uploadFile(_, _, _)).Times(1);
     auto stt =
-        stt::TextFromVoiceFactory<stt::v2::googleapi::TextFromVoice>::create(
+        stt::TextFromVoiceFactory::create<stt::v2::googleapi::TextFromVoice>(
             shellMock, helpersMock, stt::language::polish);
     auto [text, quality] = stt->listen();
 
@@ -65,7 +65,7 @@ TEST_F(TestStt, googleApiEmptyTextShellCmdAndHelpersCalled_ResultValid)
     EXPECT_CALL(*helpersMock, uploadFile(HasSubstr("lang=en-US"), _, _))
         .Times(1);
     auto stt =
-        stt::TextFromVoiceFactory<stt::v2::googleapi::TextFromVoice>::create(
+        stt::TextFromVoiceFactory::create<stt::v2::googleapi::TextFromVoice>(
             shellMock, helpersMock, stt::language::english);
     auto [text, quality] = stt->listen();
 
@@ -101,7 +101,7 @@ TEST_F(TestStt,
         .Times(1);
 
     auto stt =
-        stt::TextFromVoiceFactory<stt::v2::googleapi::TextFromVoice>::create(
+        stt::TextFromVoiceFactory::create<stt::v2::googleapi::TextFromVoice>(
             shellMock, helpersMock, stt::language::english);
     auto result1 = stt->listen();
     auto result2 = stt->listen(stt::language::german);
@@ -117,7 +117,7 @@ TEST_F(TestStt, googleApiShellCmdCalledAndNoMockedHelpersUsed_ListenThrows)
     ON_CALL(*shellMock, run(_)).WillByDefault(Return(0));
     EXPECT_CALL(*shellMock, run(_)).Times(1);
     auto stt =
-        stt::TextFromVoiceFactory<stt::v2::googleapi::TextFromVoice>::create(
+        stt::TextFromVoiceFactory::create<stt::v2::googleapi::TextFromVoice>(
             shellMock, stt::language::english);
     EXPECT_THROW(stt->listen(), std::exception);
 }
@@ -127,7 +127,7 @@ TEST_F(TestStt, googleCloudV1ShellCmdCalledAndNoMockedHelpersUsed_ListenThrows)
     ON_CALL(*shellMock, run(_)).WillByDefault(Return(0));
     EXPECT_CALL(*shellMock, run(_)).Times(1);
     auto stt =
-        stt::TextFromVoiceFactory<stt::v1::googlecloud::TextFromVoice>::create(
+        stt::TextFromVoiceFactory::create<stt::v1::googlecloud::TextFromVoice>(
             shellMock, stt::language::english);
     EXPECT_THROW(stt->listen(), std::runtime_error);
 }
@@ -139,7 +139,7 @@ TEST_F(
     ON_CALL(*shellMock, run(_)).WillByDefault(Return(0));
     EXPECT_CALL(*shellMock, run(_)).Times(1);
     auto stt =
-        stt::TextFromVoiceFactory<stt::v1::googlecloud::TextFromVoice>::create(
+        stt::TextFromVoiceFactory::create<stt::v1::googlecloud::TextFromVoice>(
             shellMock, stt::language::english);
     EXPECT_THROW(stt->listen(stt::language::polish), std::runtime_error);
 }
@@ -149,7 +149,7 @@ TEST_F(TestStt, googleCloudV2ShellCmdCalledAndNoMockedHelpersUsed_ListenThrows)
     ON_CALL(*shellMock, run(_)).WillByDefault(Return(0));
     EXPECT_CALL(*shellMock, run(_)).Times(1);
     auto stt =
-        stt::TextFromVoiceFactory<stt::v2::googlecloud::TextFromVoice>::create(
+        stt::TextFromVoiceFactory::create<stt::v2::googlecloud::TextFromVoice>(
             shellMock, stt::language::english);
     EXPECT_THROW(stt->listen(), std::runtime_error);
 }
@@ -161,7 +161,7 @@ TEST_F(
     ON_CALL(*shellMock, run(_)).WillByDefault(Return(0));
     EXPECT_CALL(*shellMock, run(_)).Times(1);
     auto stt =
-        stt::TextFromVoiceFactory<stt::v2::googlecloud::TextFromVoice>::create(
+        stt::TextFromVoiceFactory::create<stt::v2::googlecloud::TextFromVoice>(
             shellMock, stt::language::english);
     EXPECT_THROW(stt->listen(stt::language::polish), std::runtime_error);
 }
