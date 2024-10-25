@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-psabi")
 project(stt-ut)
 enable_testing()
 
-include($ENV{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake)  
+include(cmake/vcpkg/setup.cmake)
 include(cmake/flags.cmake)
 include(cmake/dependencies.cmake)
 
