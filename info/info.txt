@@ -60,6 +60,9 @@ $ readlink -f /etc/modprobe.d/alsa-base.conf
 git clone https://github.com/microsoft/vcpkg.git
 export VCPKG_FORCE_SYSTEM_BINARIES=1
 cd vcpkg && sh bootstrap-vcpkg.sh -disableMetrics
+export VCPKG_INSTALLATION_ROOT=~/git/vcpkg/
+export PATH=$PATH:$VCPKG_INSTALLATION_ROOT
+
 ## ~/git/vcpkg/vcpkg install google-cloud-cpp[core,speech,texttospeech]
 ~/git/vcpkg/vcpkg install google-cloud-cpp[core,speech]
 cmake -S . -B build -DCMAKE_TOOLCHAIN_FILE=~/git/vcpkg/scripts/buildsystems/vcpkg.cmake -DADD_EXAMPLES=ON ..
