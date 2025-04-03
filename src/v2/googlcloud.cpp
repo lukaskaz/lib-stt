@@ -40,12 +40,12 @@ static const std::unordered_map<language, std::string> langMap = {
 struct TextFromVoice::Handler
 {
   public:
-    Handler(std::shared_ptr<shell::ShellCommand> shell, language lang) :
-        shell{shell}, filesystem{audioDirectory},
-        google{keyFile, recognizerInfo, lang}
+    Handler(std::shared_ptr<shell::ShellIf> shell, language lang) :
+        shell{shell}, filesystem{audioDirectory}, google{keyFile,
+                                                         recognizerInfo, lang}
     {}
 
-    std::shared_ptr<shell::ShellCommand> shell;
+    std::shared_ptr<shell::ShellIf> shell;
     class Filesystem
     {
       public:
@@ -170,7 +170,7 @@ struct TextFromVoice::Handler
     } google;
 };
 
-TextFromVoice::TextFromVoice(std::shared_ptr<shell::ShellCommand> shell,
+TextFromVoice::TextFromVoice(std::shared_ptr<shell::ShellIf> shell,
                              std::shared_ptr<stthelpers::HelpersIf>,
                              language lang) :
     handler{std::make_unique<Handler>(shell, lang)}

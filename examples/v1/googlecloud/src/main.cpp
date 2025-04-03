@@ -25,6 +25,7 @@ int main()
         auto result = stt->listen();
         std::cout << "Text: " << std::quoted(result.first)
                   << ", quality: " << result.second << "%\n";
+        exit(1);
         std::cout << "Speak now in english ...\n";
         result = stt->listen(stt::language::english);
         std::cout << "Text: " << std::quoted(result.first)

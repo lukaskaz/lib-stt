@@ -22,5 +22,5 @@ file(GLOB_RECURSE SOURCES "src/*.cpp")
 add_library(${PROJECT_NAME} ${SOURCES})
 add_dependencies(${PROJECT_NAME} libshellcmd)
 add_dependencies(${PROJECT_NAME} libnlohmann)
-target_link_libraries(${PROJECT_NAME} shellcmd CURL::libcurl google-cloud-cpp::speech)
+target_link_libraries(${PROJECT_NAME} shell CURL::libcurl google-cloud-cpp::speech)
 

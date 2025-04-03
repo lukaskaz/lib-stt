@@ -29,7 +29,7 @@ add_executable(${PROJECT_NAME} ${APP_SOURCES} ${TEST_SOURCES})
 add_dependencies(${PROJECT_NAME} googletest)
 add_dependencies(${PROJECT_NAME} libshellcmd)
 add_dependencies(${PROJECT_NAME} libnlohmann)
-target_link_libraries(${PROJECT_NAME} shellcmd gtest gmock CURL::libcurl google-cloud-cpp::speech)
+target_link_libraries(${PROJECT_NAME} shell gtest gmock CURL::libcurl google-cloud-cpp::speech)
 
 add_test(
     NAME ${PROJECT_NAME}

@@ -19,7 +19,7 @@ class TextFromVoice : public TextFromVoiceIf
 
   private:
     friend class stt::TextFromVoiceFactory;
-    TextFromVoice(std::shared_ptr<shell::ShellCommand>,
+    TextFromVoice(std::shared_ptr<shell::ShellIf>,
                   std::shared_ptr<stthelpers::HelpersIf>, language);
 
     struct Handler;

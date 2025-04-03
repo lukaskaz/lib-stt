@@ -1,10 +1,10 @@
 #pragma once
 
-#include "shellcommand.hpp"
+#include "shell/interfaces/shell.hpp"
 
 #include <gmock/gmock.h>
 
-class ShellMock : public shell::ShellCommand
+class ShellMock : public shell::ShellIf
 {
   public:
     MOCK_METHOD(int, run, (const std::string&), (override));
