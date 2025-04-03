@@ -67,7 +67,7 @@ add_custom_command(TARGET coverage
 add_custom_command(TARGET coverage
     COMMENT "Collecting data ${SOURCES_PATH}/inc/*"
     COMMAND lcov --capture --rc lcov_branch_coverage=1 --directory ${OBJECTS_DIR}
-        --output-file coverage.info
+        --output-file coverage.info  --ignore-errors mismatch
     COMMAND lcov --extract coverage.info '${SOURCES_PATH}/src/*' '${SOURCES_PATH}/inc/*'
         --output-file coverage.info
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
