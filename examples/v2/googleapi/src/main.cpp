@@ -37,7 +37,7 @@ int main(int argc, char** argv)
             using namespace stt::v2::googleapi;
             auto stt =
                 stt::TextFromVoiceFactory::create<TextFromVoice, configmin_t>(
-                    {stt::language::polish, logif});
+                    {stt::language::polish, {}, logif});
 
             std::cout << "Speak now in polish ...\n";
             auto result = stt->listen();

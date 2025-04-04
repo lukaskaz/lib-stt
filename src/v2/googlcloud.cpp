@@ -29,7 +29,7 @@ static const std::filesystem::path keyFile = "../conf/key.json";
 static const std::filesystem::path audioDirectory = "audio";
 static const std::filesystem::path recordingName = "recording.wav";
 static const auto audioFilePath = audioDirectory / recordingName;
-static const auto recordAudioCmd = getrecordingcmd(audioFilePath.native());
+static auto recordAudioCmd = getrecordingcmd(audioFilePath.native(), "");
 // static const recognizer_t recognizerInfo = {"lukaszsttproject",
 // "europe-west4", "stt-region", "chirp_2"};
 static const recognizer_t recognizerInfo = {"lukaszsttproject", "eu",
@@ -48,20 +48,26 @@ struct TextFromVoice::Handler
         shell{shell::Factory::create<shell::lnx::bash::Shell>()},
         filesystem{this, audioDirectory}, google{this, keyFile, recognizerInfo,
                                                  std::get<language>(config)}
-    {}
+    {
+        if (auto interval = std::get<std::string>(config); !interval.empty())
+            recordAudioCmd = getrecordingcmd(audioFilePath.native(), interval);
+    }
 
     Handler(const configall_t& config) :
         logif{std::get<std::shared_ptr<logs::LogIf>>(config)},
         shell{std::get<std::shared_ptr<shell::ShellIf>>(config)},
         filesystem{this, audioDirectory}, google{this, keyFile, recognizerInfo,
                                                  std::get<language>(config)}
-    {}
+    {
+        if (auto interval = std::get<std::string>(config); !interval.empty())
+            recordAudioCmd = getrecordingcmd(audioFilePath.native(), interval);
+    }
 
     transcript_t listen()
     {
         while (true)
         {
-            log(logs::level::debug, "Waiting for speech to process");
+            log(logs::level::debug, "Recording voice by: " + recordAudioCmd);
             shell->run(recordAudioCmd);
             google.uploadaudio(audioFilePath);
             if (auto transcript = google.gettranscript())
@@ -74,7 +80,7 @@ struct TextFromVoice::Handler
     {
         while (true)
         {
-            log(logs::level::debug, "Waiting for speech to process");
+            log(logs::level::debug, "Recording voice by: " + recordAudioCmd);
             shell->run(recordAudioCmd);
             google.uploadaudio(audioFilePath);
             if (auto transcript = google.gettranscript(lang))

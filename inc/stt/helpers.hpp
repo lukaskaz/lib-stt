@@ -45,6 +45,6 @@ std::string str(const auto& value)
         return std::to_string(value);
 }
 
-std::string getrecordingcmd(const std::string&);
+std::string getrecordingcmd(const std::string&, const std::string&);
 
 } // namespace helpers

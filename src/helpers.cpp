@@ -52,11 +52,15 @@ std::shared_ptr<HelpersIf> HelpersFactory::create()
     return std::make_shared<Helpers>();
 }
 
-std::string getrecordingcmd(const std::string& file)
+std::string getrecordingcmd(const std::string& file,
+                            const std::string& interval)
 {
+    // "sox --no-show-progress --type alsa default --rate 16k --channels 1
+    // #file# silence -l 1 1 2.0% 1 2.0t 1.0% pad 0.3 0.2";
+    auto ivtime = !interval.empty() ? interval : "2.0t";
     return "sox --no-show-progress --type alsa default --rate 16k --channels "
            "1 " +
-           file + " silence -l 1 1 2.0% 1 2.0t 1.0% pad 0.3 0.2";
+           file + " silence -l 1 1 2.0% 1 " + ivtime + " 1.0% pad 0.3 0.2";
 }
 
 } // namespace helpers
