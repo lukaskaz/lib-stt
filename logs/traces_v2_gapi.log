@@ -1,0 +1,12 @@
+Logging started at Sat Apr  5 00:42:21 2025
+[20250405_004221.608772][DBG ][void stt::v2::googleapi::TextFromVoice::Handler::Filesystem::createdirectory()] Created directory: 'audio'
+[20250405_004221.609185][INFO][stt::v2::googleapi::TextFromVoice::Handler::Google::Google(const stt::v2::googleapi::TextFromVoice::Handler*, const std::filesystem::__cxx11::path&, stt::language)] Created v2::gapi stt [langcode/langid]: pl-PL/0
+[20250405_004221.609262][DBG ][stt::transcript_t stt::v2::googleapi::TextFromVoice::Handler::listen()] Waiting for speech to process
+[20250405_004226.326011][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googleapi::TextFromVoice::Handler::Google::gettranscript()] Returning transcript [text/confid]: 'Cześć co tam u ciebie'/0.918985
+[20250405_004226.326146][DBG ][stt::transcript_t stt::v2::googleapi::TextFromVoice::Handler::listen(stt::language)] Waiting for speech to process
+[20250405_004232.124238][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googleapi::TextFromVoice::Handler::Google::gettranscript()] Returning transcript [text/confid]: 'not bad not bad at all Paul'/0.959956
+[20250405_004232.124348][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googleapi::TextFromVoice::Handler::Google::gettranscript(stt::language)] Speech detected for en-US/1
+[20250405_004232.124400][DBG ][stt::transcript_t stt::v2::googleapi::TextFromVoice::Handler::listen()] Waiting for speech to process
+[20250405_004240.059173][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googleapi::TextFromVoice::Handler::Google::gettranscript()] Returning transcript [text/confid]: 'to spoko a u mnie mogłoby być troszeczkę lepiej ale i tak nie narzekam dzięki'/0.918985
+[20250405_004240.059385][INFO][stt::v2::googleapi::TextFromVoice::Handler::Google::~Google()] Released v2::gapi stt [langcode/langid]: pl-PL/0
+[20250405_004240.061156][DBG ][void stt::v2::googleapi::TextFromVoice::Handler::Filesystem::removedirectory() const] Removed directory: 'audio'

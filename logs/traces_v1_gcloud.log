@@ -1,0 +1,21 @@
+Logging started at Sat Apr  5 00:31:39 2025
+[20250405_003139.362331][DBG ][void stt::v1::googlecloud::TextFromVoice::Handler::Filesystem::createdirectory()] Created directory: 'audio'
+[20250405_003139.383268][INFO][stt::v1::googlecloud::TextFromVoice::Handler::Google::Google(const stt::v1::googlecloud::TextFromVoice::Handler*, const std::filesystem::__cxx11::path&, stt::language)] Created v1::gcloud stt [langcode/langid]: pl-PL/0
+[20250405_003139.383377][DBG ][stt::transcript_t stt::v1::googlecloud::TextFromVoice::Handler::listen()] Waiting for speech to process
+[20250405_003142.568651][DBG ][void stt::v1::googlecloud::TextFromVoice::Handler::Google::uploadaudio(const std::filesystem::__cxx11::path&)] Uploaded audio to stt engine: audio/recording.wav
+[20250405_003143.407434][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v1::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Received results: 1
+[20250405_003143.407524][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v1::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Received alternatives: 1
+[20250405_003143.407572][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v1::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Returning transcript [text/confid]: 'Cześć jak się dzisiaj czujesz'/0.939331
+[20250405_003143.407698][DBG ][stt::transcript_t stt::v1::googlecloud::TextFromVoice::Handler::listen(stt::language)] Waiting for speech to process
+[20250405_003149.245659][DBG ][void stt::v1::googlecloud::TextFromVoice::Handler::Google::uploadaudio(const std::filesystem::__cxx11::path&)] Uploaded audio to stt engine: audio/recording.wav
+[20250405_003149.911413][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v1::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Received results: 1
+[20250405_003149.911522][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v1::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Received alternatives: 1
+[20250405_003149.911578][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v1::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Returning transcript [text/confid]: 'actually I'm not feeling well today'/0.979290
+[20250405_003149.911628][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v1::googlecloud::TextFromVoice::Handler::Google::gettranscript(stt::language)] Speech detected for en-US/1
+[20250405_003149.911816][DBG ][stt::transcript_t stt::v1::googlecloud::TextFromVoice::Handler::listen()] Waiting for speech to process
+[20250405_003158.813911][DBG ][void stt::v1::googlecloud::TextFromVoice::Handler::Google::uploadaudio(const std::filesystem::__cxx11::path&)] Uploaded audio to stt engine: audio/recording.wav
+[20250405_003159.454644][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v1::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Received results: 1
+[20250405_003159.454758][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v1::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Received alternatives: 1
+[20250405_003159.454819][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v1::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Returning transcript [text/confid]: 'Przykro mi stary Mam nadzieję że będzie lepiej'/0.939331
+[20250405_003159.454966][INFO][stt::v1::googlecloud::TextFromVoice::Handler::Google::~Google()] Released v1::gcloud stt [langcode/langid]: pl-PL/0
+[20250405_003159.455672][DBG ][void stt::v1::googlecloud::TextFromVoice::Handler::Filesystem::removedirectory() const] Removed directory: 'audio'

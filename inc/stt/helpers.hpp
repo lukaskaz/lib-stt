@@ -1,10 +1,11 @@
 #pragma once
 
+#include <filesystem>
 #include <memory>
 #include <string>
 #include <vector>
 
-namespace stthelpers
+namespace helpers
 {
 
 class HelpersIf
@@ -36,4 +37,14 @@ class HelpersFactory
     static std::shared_ptr<HelpersIf> create();
 };
 
-} // namespace stthelpers
+std::string str(const auto& value)
+{
+    if constexpr (std::is_same<const std::string&, decltype(value)>())
+        return value;
+    else
+        return std::to_string(value);
+}
+
+std::string getrecordingcmd(const std::string&);
+
+} // namespace helpers

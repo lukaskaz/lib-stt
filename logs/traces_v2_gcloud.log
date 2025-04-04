@@ -1,0 +1,21 @@
+Logging started at Sat Apr  5 00:49:39 2025
+[20250405_004939.778794][DBG ][void stt::v2::googlecloud::TextFromVoice::Handler::Filesystem::createdirectory()] Created directory: 'audio'
+[20250405_004939.799726][INFO][stt::v2::googlecloud::TextFromVoice::Handler::Google::Google(const stt::v2::googlecloud::TextFromVoice::Handler*, const std::filesystem::__cxx11::path&, stt::v2::googlecloud::recognizer_t, stt::language)] Created v2::gcloud stt [langcode/langid]: pl-PL/0
+[20250405_004939.799834][DBG ][stt::transcript_t stt::v2::googlecloud::TextFromVoice::Handler::listen()] Waiting for speech to process
+[20250405_004945.222684][DBG ][void stt::v2::googlecloud::TextFromVoice::Handler::Google::uploadaudio(const std::filesystem::__cxx11::path&)] Uploaded audio to stt engine: audio/recording.wav
+[20250405_004946.183904][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Received results: 1
+[20250405_004946.183989][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Received alternatives: 1
+[20250405_004946.184048][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Returning transcript [text/confid]: 'Cześć jak Ci się podobał wczorajszy mecz w telewizji o 20'/0.915017
+[20250405_004946.184125][DBG ][stt::transcript_t stt::v2::googlecloud::TextFromVoice::Handler::listen(stt::language)] Waiting for speech to process
+[20250405_004953.994080][DBG ][void stt::v2::googlecloud::TextFromVoice::Handler::Google::uploadaudio(const std::filesystem::__cxx11::path&)] Uploaded audio to stt engine: audio/recording.wav
+[20250405_004955.429542][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Received results: 1
+[20250405_004955.429640][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Received alternatives: 1
+[20250405_004955.429690][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Returning transcript [text/confid]: 'yeah it was quite interesting but I slept while watching it unfortunately'/0.972338
+[20250405_004955.429732][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googlecloud::TextFromVoice::Handler::Google::gettranscript(stt::language)] Speech detected for en-US/1
+[20250405_004955.429785][DBG ][stt::transcript_t stt::v2::googlecloud::TextFromVoice::Handler::listen()] Waiting for speech to process
+[20250405_005006.733776][DBG ][void stt::v2::googlecloud::TextFromVoice::Handler::Google::uploadaudio(const std::filesystem::__cxx11::path&)] Uploaded audio to stt engine: audio/recording.wav
+[20250405_005007.487738][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Received results: 1
+[20250405_005007.487829][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Received alternatives: 1
+[20250405_005007.487878][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googlecloud::TextFromVoice::Handler::Google::gettranscript()] Returning transcript [text/confid]: 'rozumiem cię stary ale nie martw się będzie powtórka'/0.939331
+[20250405_005007.487936][INFO][stt::v2::googlecloud::TextFromVoice::Handler::Google::~Google()] Released v2::gcloud stt [langcode/langid]: pl-PL/0
+[20250405_005007.488559][DBG ][void stt::v2::googlecloud::TextFromVoice::Handler::Filesystem::removedirectory() const] Removed directory: 'audio'
