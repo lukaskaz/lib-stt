@@ -1,5 +1,8 @@
 #include "stt/interfaces/v2/googleapi.hpp"
 
+#include "shell/interfaces/linux/bash/shell.hpp"
+#include "stt/helpers.hpp"
+
 #include <nlohmann/json.hpp>
 
 #include <cmath>
@@ -7,23 +10,23 @@
 #include <fstream>
 #include <iostream>
 #include <optional>
+#include <source_location>
 #include <unordered_map>
 
 namespace stt::v2::googleapi
 {
 
 using json = nlohmann::json;
+using namespace helpers;
+using namespace std::string_literals;
 
-static const std::string audioDirectory = "audio/";
-static const std::string recordingName = "recording.flac";
-static const std::string audioFilePath = audioDirectory + recordingName;
-static const std::string recordAudioCmd =
-    "sox --no-show-progress --type alsa default --rate 16k --channels 1 " +
-    audioFilePath + " silence -l 1 1 2.0% 1 1.0t 1.0% pad 0.3 0.2";
-static const std::string configFile = "../conf/init.json";
-static const std::string convUri =
-    "http://www.google.com/speech-api/v2/recognize";
-static const std::string resultSignature = "transcript";
+static const std::filesystem::path configFile = "../conf/init.json";
+static const std::filesystem::path audioDirectory = "audio";
+static const std::filesystem::path recordingName = "recording.flac";
+static const auto audioFilePath = audioDirectory / recordingName;
+static auto recordAudioCmd = getrecordingcmd(audioFilePath.native(), {});
+static const auto convUri = "http://www.google.com/speech-api/v2/recognize"s;
+static const auto resultSignature = "transcript"s;
 
 static const std::unordered_map<language, std::string> langMap = {
     {language::polish, "pl-PL"},
@@ -33,17 +36,63 @@ static const std::unordered_map<language, std::string> langMap = {
 struct TextFromVoice::Handler
 {
   public:
-    Handler(std::shared_ptr<shell::ShellCommand> shell,
-            std::shared_ptr<stthelpers::HelpersIf> helpers, language lang) :
-        shell{shell},
-        filesystem{audioDirectory}, google{configFile, helpers, lang}
-    {}
+    Handler(const configmin_t& config) :
+        logif{std::get<std::shared_ptr<logs::LogIf>>(config)},
+        shell{shell::Factory::create<shell::lnx::bash::Shell>()},
+        helpers{helpers::HelpersFactory::create()},
+        filesystem{this, audioDirectory}, google{this, configFile,
+                                                 std::get<language>(config)}
+    {
+        if (auto interval = std::get<std::string>(config); !interval.empty())
+            recordAudioCmd = getrecordingcmd(audioFilePath.native(), interval);
+    }
 
-    std::shared_ptr<shell::ShellCommand> shell;
+    Handler(const configall_t& config) :
+        logif{std::get<std::shared_ptr<logs::LogIf>>(config)},
+        shell{std::get<std::shared_ptr<shell::ShellIf>>(config)},
+        helpers{std::get<std::shared_ptr<helpers::HelpersIf>>(config)},
+        filesystem{this, audioDirectory}, google{this, configFile,
+                                                 std::get<language>(config)}
+    {
+        if (auto interval = std::get<std::string>(config); !interval.empty())
+            recordAudioCmd = getrecordingcmd(audioFilePath.native(), interval);
+    }
+
+    transcript_t listen()
+    {
+        while (true)
+        {
+            log(logs::level::debug, "Recording voice by: " + recordAudioCmd);
+            shell->run(recordAudioCmd);
+            if (auto transcript = google.gettranscript())
+                return *transcript;
+        }
+        return {};
+    }
+
+    transcript_t listen(language lang)
+    {
+        while (true)
+        {
+            log(logs::level::debug, "Recording voice by: " + recordAudioCmd);
+            shell->run(recordAudioCmd);
+            if (auto transcript = google.gettranscript(lang))
+                return *transcript;
+        }
+        return {};
+    }
+
+  private:
+    const std::shared_ptr<logs::LogIf> logif;
+    const std::shared_ptr<shell::ShellIf> shell;
+    const std::shared_ptr<helpers::HelpersIf> helpers;
     class Filesystem
     {
       public:
-        Filesystem(const std::string& dirname) : basedir{dirname}
+        Filesystem(const Handler* handler,
+                   const std::filesystem::path& dirname) :
+            handler{handler},
+            basedir{dirname}
         {
             createdirectory();
         }
@@ -55,30 +104,42 @@ struct TextFromVoice::Handler
 
         void createdirectory()
         {
-            direxist = !std::filesystem::create_directories(basedir);
+            if ((direxist = !std::filesystem::create_directories(basedir)))
+                handler->log(logs::level::warning,
+                             "Cannot create already existing directory: '" +
+                                 basedir.native() + "'");
+            else
+                handler->log(logs::level::debug,
+                             "Created directory: '" + basedir.native() + "'");
         }
         void removedirectory() const
         {
             direxist ? false : std::filesystem::remove_all(basedir);
+            if (direxist)
+                handler->log(logs::level::warning,
+                             "Not removing previously existed directory: '" +
+                                 basedir.native() + "'");
+            else
+                handler->log(logs::level::debug,
+                             "Removed directory: '" + basedir.native() + "'");
         }
 
       private:
-        const std::string basedir;
+        const Handler* handler;
+        const std::filesystem::path basedir;
         bool direxist;
     } filesystem;
 
     class Google
     {
       public:
-        Google(const std::string& configfile,
-               std::shared_ptr<stthelpers::HelpersIf> helpers, language lang) :
-            helpers{helpers},
-            key{[](const std::string& file) {
+        Google(const Handler* handler, const std::filesystem::path& configfile,
+               language lang) :
+            handler{handler},
+            key{[](const std::filesystem::path& file) {
                 std::ifstream ifs(file);
                 if (!ifs.is_open())
-                {
                     throw std::runtime_error("Cannot open config file for STT");
-                }
                 auto content = std::string(
                     std::istreambuf_iterator<char>(ifs.rdbuf()), {});
                 json sttConfig = json::parse(content)["stt"];
@@ -92,12 +153,23 @@ struct TextFromVoice::Handler
             }(configfile)}
         {
             setlang(lang);
+
+            handler->log(logs::level::info,
+                         "Created v2::gapi stt [langcode/langid]: " +
+                             getparams());
+        }
+
+        ~Google()
+        {
+            handler->log(logs::level::info,
+                         "Released v2::gapi stt [langcode/langid]: " +
+                             getparams());
         }
 
         std::optional<transcript_t> gettranscript()
         {
             std::string result;
-            helpers->uploadFile(url, audioFilePath, result);
+            handler->helpers->uploadFile(url, audioFilePath, result);
             if (auto startpos = result.find("{\"transcript\"");
                 startpos != std::string::npos)
             {
@@ -110,10 +182,14 @@ struct TextFromVoice::Handler
                     auto text = first["transcript"].get<std::string>();
                     auto confid = first["confidence"].get<double>();
                     auto quality = (uint32_t)std::lround(100 * confid);
+                    handler->log(logs::level::debug,
+                                 "Returning transcript [text/confid]: '" +
+                                     text + "'/" + str(confid));
                     return std::make_optional<transcript_t>(std::move(text),
                                                             quality);
                 }
             }
+            handler->log(logs::level::debug, "Cannot recognize transcript");
             return std::nullopt;
         }
 
@@ -122,12 +198,14 @@ struct TextFromVoice::Handler
             const auto mainlang{lang};
             setlang(tmplang);
             auto transcript = gettranscript();
+            handler->log(logs::level::debug,
+                         "Speech detected for " + getparams());
             setlang(mainlang);
             return transcript;
         }
 
       private:
-        std::shared_ptr<stthelpers::HelpersIf> helpers;
+        const Handler* handler;
         const std::string key;
         language lang;
         std::string url;
@@ -142,45 +220,50 @@ struct TextFromVoice::Handler
             }(lang);
             url = std::string(convUri) + "?lang=" + langId + "&key=" + key;
         }
+
+        std::string getparams() const
+        {
+            auto langid = (std::underlying_type_t<decltype(lang)>)lang;
+            auto langcode = langMap.contains(lang) ? langMap.at(lang) : "UNDEF";
+            return langcode + "/" + str(langid);
+        }
     } google;
+
+    void log(
+        logs::level level, const std::string& msg,
+        const std::source_location loc = std::source_location::current()) const
+    {
+        if (logif)
+            logif->log(level, std::string{loc.function_name()}, msg);
+    }
 };
 
-TextFromVoice::TextFromVoice(std::shared_ptr<shell::ShellCommand> shell,
-                             std::shared_ptr<stthelpers::HelpersIf> helpers,
-                             language lang) :
-    handler{std::make_unique<Handler>(shell, helpers, lang)}
-{}
+TextFromVoice::TextFromVoice(const config_t& config)
+{
+    handler = std::visit(
+        [](const auto& config) -> decltype(TextFromVoice::handler) {
+            if constexpr (!std::is_same<const std::monostate&,
+                                        decltype(config)>())
+            {
+                return std::make_unique<TextFromVoice::Handler>(config);
+            }
+            throw std::runtime_error(
+                std::source_location::current().function_name() +
+                "-> config not supported"s);
+        },
+        config);
+}
 
 TextFromVoice::~TextFromVoice() = default;
 
 transcript_t TextFromVoice::listen()
 {
-    while (true)
-    {
-        handler->shell->run(recordAudioCmd);
-        if (auto transcript = handler->google.gettranscript();
-            transcript.has_value())
-        {
-            return *transcript;
-        }
-        std::cerr << "Cannot get transcipt, repeating...\n";
-    }
-    return {};
+    return handler->listen();
 }
 
 transcript_t TextFromVoice::listen(language lang)
 {
-    while (true)
-    {
-        handler->shell->run(recordAudioCmd);
-        if (auto transcript = handler->google.gettranscript(lang);
-            transcript.has_value())
-        {
-            return *transcript;
-        }
-        std::cerr << "Cannot get transcipt, repeating...\n";
-    }
-    return {};
+    return handler->listen(lang);
 }
 
 } // namespace stt::v2::googleapi

@@ -1,13 +1,21 @@
 #pragma once
 
+#include "logs/interfaces/logs.hpp"
+#include "shell/interfaces/shell.hpp"
 #include "stt/factory.hpp"
 
-#include <cstdint>
-#include <memory>
-#include <string>
+#include <tuple>
+#include <variant>
 
 namespace stt::v1::googlecloud
 {
+
+using configmin_t =
+    std::tuple<language, std::string, std::shared_ptr<logs::LogIf>>;
+using configall_t =
+    std::tuple<language, std::string, std::shared_ptr<shell::ShellIf>,
+               std::shared_ptr<logs::LogIf>>;
+using config_t = std::variant<std::monostate, configmin_t, configall_t>;
 
 class TextFromVoice : public TextFromVoiceIf
 {
@@ -19,8 +27,7 @@ class TextFromVoice : public TextFromVoiceIf
 
   private:
     friend class stt::TextFromVoiceFactory;
-    TextFromVoice(std::shared_ptr<shell::ShellCommand>,
-                  std::shared_ptr<stthelpers::HelpersIf>, language);
+    TextFromVoice(const config_t&);
 
     struct Handler;
     std::unique_ptr<Handler> handler;

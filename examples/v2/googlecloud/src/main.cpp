@@ -1,10 +1,12 @@
+#include "logs/interfaces/console/logs.hpp"
+#include "logs/interfaces/group/logs.hpp"
+#include "logs/interfaces/storage/logs.hpp"
 #include "stt/interfaces/v2/googlecloud.hpp"
 
 #include <signal.h>
 
 #include <iomanip>
 #include <iostream>
-#include <memory>
 
 void signalhandler(int signum)
 {
@@ -12,27 +14,46 @@ void signalhandler(int signum)
     exit(signum);
 }
 
-int main()
+int main(int argc, char** argv)
 {
     try
     {
         signal(SIGINT, signalhandler);
+        if (argc > 1)
+        {
+            auto loglvl =
+                (bool)atoi(argv[1]) ? logs::level::debug : logs::level::info;
 
-        using namespace stt::v2::googlecloud;
-        auto stt = stt::TextFromVoiceFactory::create<TextFromVoice>(
-            stt::language::polish);
-        std::cout << "Speak now in polish ...\n";
-        auto result = stt->listen();
-        std::cout << "Text: " << std::quoted(result.first)
-                  << ", quality: " << result.second << "%\n";
-        std::cout << "Speak now in english ...\n";
-        result = stt->listen(stt::language::english);
-        std::cout << "Text: " << std::quoted(result.first)
-                  << ", quality: " << result.second << "%\n";
-        std::cout << "Speak now in polish again ...\n";
-        result = stt->listen();
-        std::cout << "Text: " << std::quoted(result.first)
-                  << ", quality: " << result.second << "%\n";
+            auto logconsole = logs::Factory::create<logs::console::Log,
+                                                    logs::console::config_t>(
+                {loglvl, logs::time::hide, logs::tags::hide});
+            auto logstorage = logs::Factory::create<logs::storage::Log,
+                                                    logs::storage::config_t>(
+                {loglvl, logs::time::show, logs::tags::show, {}});
+            auto logif =
+                logs::Factory::create<logs::group::Log, logs::group::config_t>(
+                    {logconsole, logstorage});
+
+            using namespace stt::v2::googlecloud;
+            auto stt =
+                stt::TextFromVoiceFactory::create<TextFromVoice, configmin_t>(
+                    {stt::language::polish, "1.0t", logif});
+
+            std::cout << "Speak now in polish ...\n";
+            auto result = stt->listen();
+            std::cout << "Text: " << std::quoted(result.first)
+                      << ", quality: " << result.second << "%\n";
+
+            std::cout << "Speak now in english ...\n";
+            result = stt->listen(stt::language::english);
+            std::cout << "Text: " << std::quoted(result.first)
+                      << ", quality: " << result.second << "%\n";
+
+            std::cout << "Speak now in polish again ...\n";
+            result = stt->listen();
+            std::cout << "Text: " << std::quoted(result.first)
+                      << ", quality: " << result.second << "%\n";
+        }
     }
     catch (std::exception& err)
     {

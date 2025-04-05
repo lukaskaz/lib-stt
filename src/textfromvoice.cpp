@@ -1,13 +1,14 @@
 #include "stt/interfaces/textfromvoice.hpp"
 
-#include "shellcommand.hpp"
+#include "shell/interfaces/linux/bash/shell.hpp"
 
 namespace stt
 {
 
 void stt::TextFromVoiceIf::kill()
 {
-    shell::BashCommand().run("killall -s KILL sox");
+    shell::Factory::create<shell::lnx::bash::Shell>()->run(
+        "killall -s KILL sox");
 }
 
 } // namespace stt

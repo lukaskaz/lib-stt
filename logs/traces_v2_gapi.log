@@ -1,0 +1,12 @@
+Logging started at Sat Apr  5 01:30:54 2025
+[20250405_013054.981030][DBG ][void stt::v2::googleapi::TextFromVoice::Handler::Filesystem::createdirectory()] Created directory: 'audio'
+[20250405_013054.981330][INFO][stt::v2::googleapi::TextFromVoice::Handler::Google::Google(const stt::v2::googleapi::TextFromVoice::Handler*, const std::filesystem::__cxx11::path&, stt::language)] Created v2::gapi stt [langcode/langid]: pl-PL/0
+[20250405_013054.981384][DBG ][stt::transcript_t stt::v2::googleapi::TextFromVoice::Handler::listen()] Recording voice by: sox --no-show-progress --type alsa default --rate 16k --channels 1 audio/recording.flac silence -l 1 1 2.0% 1 2.0t 1.0% pad 0.3 0.2
+[20250405_013101.962452][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googleapi::TextFromVoice::Handler::Google::gettranscript()] Returning transcript [text/confid]: 'Cześć co tam dobrego u ciebie słychać'/0.918985
+[20250405_013101.962553][DBG ][stt::transcript_t stt::v2::googleapi::TextFromVoice::Handler::listen(stt::language)] Recording voice by: sox --no-show-progress --type alsa default --rate 16k --channels 1 audio/recording.flac silence -l 1 1 2.0% 1 2.0t 1.0% pad 0.3 0.2
+[20250405_013108.362694][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googleapi::TextFromVoice::Handler::Google::gettranscript()] Returning transcript [text/confid]: 'not bad not bad at all Paul'/0.933015
+[20250405_013108.362791][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googleapi::TextFromVoice::Handler::Google::gettranscript(stt::language)] Speech detected for en-US/1
+[20250405_013108.362846][DBG ][stt::transcript_t stt::v2::googleapi::TextFromVoice::Handler::listen()] Recording voice by: sox --no-show-progress --type alsa default --rate 16k --channels 1 audio/recording.flac silence -l 1 1 2.0% 1 2.0t 1.0% pad 0.3 0.2
+[20250405_013117.533498][DBG ][std::optional<std::pair<std::__cxx11::basic_string<char>, unsigned int> > stt::v2::googleapi::TextFromVoice::Handler::Google::gettranscript()] Returning transcript [text/confid]: 'to spoko a u mnie mogłoby być trochę lepiej ale i tak nie narzekam dzięki'/0.904355
+[20250405_013117.533612][INFO][stt::v2::googleapi::TextFromVoice::Handler::Google::~Google()] Released v2::gapi stt [langcode/langid]: pl-PL/0
+[20250405_013117.533853][DBG ][void stt::v2::googleapi::TextFromVoice::Handler::Filesystem::removedirectory() const] Removed directory: 'audio'
